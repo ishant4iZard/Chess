@@ -93,7 +93,7 @@ ChessWindow::ChessWindow(int width, int height, const char* name, const char* im
     Holder.top = 0;
     Holder.width = width;
     Holder.height = height;
-    
+
     FitToHolder();
     sf::IntRect blank;
     for (int i = 0; i < 12; ++i)
@@ -117,6 +117,8 @@ ChessWindow::ChessWindow(int width, int height, const char* name, const char* im
         }
     }
     
+    font.loadFromFile("arial.ttf");
+
     MapPieces();
     window.create(sf::VideoMode(width, height), name);
 }
@@ -193,7 +195,20 @@ bool ChessWindow::Update()
                 //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
                 isSelected = 0;
             }
-            
+            if (!playBoard.getTurn()) {
+                std::cout << "What What\n";
+                std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
+                int numMoves = AImoves.size();
+                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 3);
+                if (m.X != -1 && m.oX != -1 && m.Y != -1, m.oY != -1) {
+                    if (playBoard.playMove(m)) {
+                        MapPieces(m);
+                        playBoard.nextTurn();
+                    }
+                }
+                else
+                    gameover = true;
+            }
 
             std::cout << playBoard.score();
 
@@ -202,22 +217,36 @@ bool ChessWindow::Update()
             window.close();
             return false;
             break;
+        case sf::Event::KeyPressed:
+            if (event.key.code == sf::Keyboard::Escape) {
+                window.close();
+                return false;
+                break;
+            }
         }
+
     }
-    if (!playBoard.getTurn()) {
-        std::cout << "What What\n";
-        std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
-        int numMoves = AImoves.size();
-        move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 3);
-        if (playBoard.playMove(m)) {
-            MapPieces(m);
-            playBoard.nextTurn();
-        }
-    }
+    
 
     window.clear();
     DrawSquares();
     DrawPieces();
+    if (gameover) {
+        std::string a = (playBoard.getTurn() == 0 ? "white" : "black");
+        text.setString(a + " wins!!");
+        text2.setString("Press 'Esc' to close");
+        text.setFont(font);
+        text2.setFont(font);
+        text.setCharacterSize(0.1*X);
+        text2.setCharacterSize(0.04*X);
+
+        text.setPosition(0.24*X, 0.425*Y);
+        text2.setPosition(0.3*X, 0.625*Y);
+        text.setFillColor(sf::Color::Red);
+        text2.setFillColor(sf::Color::Blue);
+        window.draw(text);
+        window.draw(text2);
+    }
     window.display();
     return true;
 }

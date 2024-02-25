@@ -21,6 +21,6 @@ int main() {
 	while (window.Update()) {
         //refine moves, checks and other loops
 	}
-
+    //window.close();
 	return 0;
 }

@@ -12,6 +12,9 @@ private:
 	sf::IntRect Holder;
 	sf::Color color[2];
 	sf::Texture pieceTex[12];
+	sf::Font font;
+	sf::Text text;
+	sf::Text text2;
 	ChessPiece pieces[64];
 	ChessBoard playBoard;
 	int selected[2];
@@ -23,6 +26,8 @@ private:
 	void MapPieces();
 	void DrawPieces();
 	void MapPieces(move curr);
+
+	bool gameover;
 	
 public:
 

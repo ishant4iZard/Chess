@@ -648,8 +648,8 @@ int ChessBoard::score(board board) {
 
 board createnewboard(move m , board& currgoingboard) {
     board ans = currgoingboard;
-    ans.arr[m.X][m.Y] = ans.arr[m.oX][m.oY];
-    ans.arr[m.oX][m.oY] = -1;
+    ans.arr[m.X%8][m.Y%8] = ans.arr[m.oX%8][m.oY%8];
+    ans.arr[m.oX%8][m.oY%8] = -1;
     return ans;
 }
 
@@ -657,7 +657,7 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth) {
     std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
     int itr = 0;
     if (depth == 0) {
-        move m;
+        move m (-1,-1,-1,-1);
         while (itr<Movesthisturn.size())
         {
             if (playMove(Movesthisturn[itr], newboard , newturn, Movesthisturn)) {
@@ -672,11 +672,15 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth) {
     move BestMove/* = Movesthisturn[itr]*/;
     int oldScore = newturn == 1 ? (INT_MIN) : (INT_MAX);
 
+
     for (int i = 0; i < Movesthisturn.size(); ++i)
     {
         if (playMove(Movesthisturn[i], newboard , newturn, Movesthisturn)) {
             board recursionBoard = createnewboard(Movesthisturn[i], newboard);
             move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1);
+            if (bestOpponentMove.X == -1) {
+                return move(-1, -1, -1, -1);
+            }
             board bestOpponentBoard = createnewboard(bestOpponentMove, recursionBoard);
             int newScore = score(bestOpponentBoard);
             if (newturn == 1 && (newScore >= oldScore) && newScore<50) {
