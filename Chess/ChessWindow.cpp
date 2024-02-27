@@ -36,7 +36,7 @@ void ChessWindow::MapPieces()
 	{
 		if (pieces[i].draw == 1)
 		{
-			pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + (pieces[i].x * Holder.width / 8), Holder.top + (pieces[i].y * Holder.height / 8)));
+			pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (pieces[i].x * Holder.width / 8), Holder.top + offsety+ (pieces[i].y * Holder.height / 8)));
 			pieces[i].sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
 		}
 	}
@@ -60,7 +60,7 @@ void ChessWindow::MapPieces(move curr)
                 //sounds[2].play();
                 capture = true;
             }
-            pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + (pieces[i].x * Holder.width / 8), Holder.top + (pieces[i].y * Holder.height / 8)));
+            pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (pieces[i].x * Holder.width / 8), Holder.top + offsety +(pieces[i].y * Holder.height / 8)));
             pieces[i].sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
         }
     }
@@ -68,16 +68,10 @@ void ChessWindow::MapPieces(move curr)
         selected->x = curr.X;
         selected->y = curr.Y;
 
-        //if (!capture)
-        //{
-        //    //sounds[0].play();
-        //}
-        selected->sprite.setPosition(sf::Vector2f(Holder.left + (selected->x * Holder.width / 8), Holder.top + (selected->y * Holder.height / 8)));
+        selected->sprite.setPosition(sf::Vector2f(Holder.left + offsetx +(selected->x * Holder.width / 8), Holder.top + offsety +(selected->y * Holder.height / 8)));
         selected->sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
     }
 }
-
-
 
 ChessWindow::ChessWindow(int width, int height, const char* name, const char* imgPath[12])
 {
@@ -112,6 +106,7 @@ ChessWindow::ChessWindow(int width, int height, const char* name, const char* im
             {
                 pieces[index].sprite.setTexture(pieceTex[pieces[index].pieceID], true);
                 pieces[index].draw = 1;
+                pieces[index].isWhite = pieces[index].pieceID < 6 ? true : false;
             }
             ++index;
         }
@@ -166,7 +161,6 @@ bool ChessWindow::Update()
                     {
                         selected[0] = projX;
                         selected[1] = projY;
-                        //Squares[selected[0]][selected[1]].setFillColor(sf::Color(186, 202, 68));
                         isSelected = 1;
                     }
                 }
@@ -174,13 +168,13 @@ bool ChessWindow::Update()
                 {
                     if (selected[0] == projX && selected[1] == projY)
                     {
-                        //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
                         isSelected = 0;
                     }
                     else
                     {
+                        bool checkmate = false;
                         move m(selected[0], selected[1], projX, projY);
-                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2);
+                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate);
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1, bestmove.oY != -1) {
                             if (playBoard.playMove(m))
                             {
@@ -188,39 +182,36 @@ bool ChessWindow::Update()
                                 playBoard.nextTurn();
                             }
                         }
-                        else
+                        if (checkmate)
                         {
                             gameover = true;
                         }
-                        //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
                         isSelected = 0;
                     }
                 }
             }
             if (event.mouseButton.button == sf::Mouse::Button::Left && !playBoard.getTurn()) {
-                std::cout << "What What\n";
+                //std::cout << "What What\n";
                 std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
 
                 bool checkmate = false;
                 int numMoves = AImoves.size();
-                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 3, &checkmate);
+                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate);
                 if (playBoard.playMove(m)) {
                     MapPieces(m);
                     playBoard.nextTurn();
                 }
                 if (checkmate) {
-                    window.close();
-                    return false;
+                    gameover = true;
                 }
             }
             else if (event.mouseButton.button == sf::Mouse::Button::Right)
             {
-                //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
                 isSelected = 0;
             }
             
 
-            std::cout << playBoard.score();
+            //std::cout << playBoard.currBoard.score; 
 
             break;
         case sf::Event::Closed:

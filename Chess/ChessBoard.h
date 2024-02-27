@@ -22,12 +22,16 @@ struct board
         {8, 6, -1, -1, -1, -1, 0, 2},
         {7, 6, -1, -1, -1, -1, 0, 1} 
     };
+    int score = 0;
+
+    void updateScore(int a) {
+        score -= a;
+    }
 };
 class ChessBoard
 {
 private:
     bool turn = 1;
-    const char* notation(int x, int y);
     std::vector<board> history;
 
     void wPawn(std::vector<move>& moves, int x, int y, board newboard);
@@ -38,13 +42,13 @@ private:
     void Bishop(std::vector<move>& moves, int x, int y, board newboard);
     void Knight(std::vector<move>& moves, int x, int y, board newboard);
 
-    int score(board board);
+    //int score(board board);
 
 public:
     std::vector<move> getLegalMoves(board b, bool color);
     board currBoard;
     bool playMove(move req);
-    bool playMove(move req , board newboard , bool newturn, std::vector<move> movesthisTurn,bool* Checkmate);
+    bool playMoveAI(move req , board newboard , bool newturn, std::vector<move> movesthisTurn, bool* Checkmate);
     bool nextTurn();
     bool canwKingQcastle = true;
     bool canwKingKcastle = true;
@@ -60,5 +64,6 @@ public:
 
     move bestMove(board newboard, bool turn, int depth,bool *Checkmate);
 
-    int score();
+    int score(int i);
+    board createnewboard(move m, board& currgoingboard);
 };

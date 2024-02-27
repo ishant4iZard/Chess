@@ -27,6 +27,8 @@ private:
 	void DrawPieces();
 	void MapPieces(move curr);
 
+	int offsetx = 5, offsety = 0;
+
 	bool gameover;
 	
 public:

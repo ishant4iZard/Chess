@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ChessBoard.cpp" />
+    <ClCompile Include="ChessBoardMoves.cpp" />
     <ClCompile Include="ChessWindow.cpp" />
     <ClCompile Include="ChessWindow.h" />
     <ClCompile Include="Main.cpp" />

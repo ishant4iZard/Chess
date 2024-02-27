@@ -1,2 +1,5 @@
-﻿  ChessBoard.cpp
-  Chess.vcxproj -> C:\Users\c3002856\source\repos\Chess\x64\Debug\Chess.exe
+﻿  ChessWindow.h
+x64\Debug\ChessWindow.obj : warning LNK4042: object specified more than once; extras ignored
+Main.obj : error LNK2019: unresolved external symbol "public: __cdecl ChessWindow::ChessWindow(int,int,char const *,char const * * const)" (??0ChessWindow@@QEAA@HHPEBDQEAPEBD@Z) referenced in function main
+Main.obj : error LNK2019: unresolved external symbol "public: bool __cdecl ChessWindow::Update(void)" (?Update@ChessWindow@@QEAA_NXZ) referenced in function main
+C:\Users\ishan\source\repos\Chess\x64\Debug\Chess.exe : fatal error LNK1120: 2 unresolved externals
