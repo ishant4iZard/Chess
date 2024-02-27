@@ -180,22 +180,24 @@ bool ChessWindow::Update()
                     else
                     {
                         move m(selected[0], selected[1], projX, projY);
-                        if (playBoard.playMove(m))
+                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2);
+                        if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1, bestmove.oY != -1) {
+                            if (playBoard.playMove(m))
+                            {
+                                MapPieces(m);
+                                playBoard.nextTurn();
+                            }
+                        }
+                        else
                         {
-                            MapPieces(m);
-                            playBoard.nextTurn();
+                            gameover = true;
                         }
                         //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
                         isSelected = 0;
                     }
                 }
             }
-            else if (event.mouseButton.button == sf::Mouse::Button::Right)
-            {
-                //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
-                isSelected = 0;
-            }
-            if (!playBoard.getTurn()) {
+            if (event.mouseButton.button == sf::Mouse::Button::Left && !playBoard.getTurn()) {
                 std::cout << "What What\n";
                 std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
                 int numMoves = AImoves.size();
@@ -209,6 +211,12 @@ bool ChessWindow::Update()
                 else
                     gameover = true;
             }
+            else if (event.mouseButton.button == sf::Mouse::Button::Right)
+            {
+                //Squares[selected[0]][selected[1]].setFillColor(color[1 - ((selected[0] + selected[1]) % 2)]);
+                isSelected = 0;
+            }
+            
 
             std::cout << playBoard.score();
 

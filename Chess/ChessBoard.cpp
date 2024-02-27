@@ -678,9 +678,9 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth) {
         if (playMove(Movesthisturn[i], newboard , newturn, Movesthisturn)) {
             board recursionBoard = createnewboard(Movesthisturn[i], newboard);
             move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1);
-            if (bestOpponentMove.X == -1) {
+            /*if (bestOpponentMove.X == -1) {
                 return move(-1, -1, -1, -1);
-            }
+            }*/
             board bestOpponentBoard = createnewboard(bestOpponentMove, recursionBoard);
             int newScore = score(bestOpponentBoard);
             if (newturn == 1 && (newScore >= oldScore) && newScore<50) {
