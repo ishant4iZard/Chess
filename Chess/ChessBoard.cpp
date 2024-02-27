@@ -714,3 +714,12 @@ bool ChessBoard::nextTurn()
     turn = !turn;
     return turn;
 }
+
+////////////////ishi  pagallllllllll hai
+///ekdm pagal
+///ab isko  dekh kr bhi paglayega
+/// bola tha pagal hai
+/// heheheh
+/// i told ya
+/// achaaa last line..ishi tondlu hai
+/// heheheh ye to sach hai

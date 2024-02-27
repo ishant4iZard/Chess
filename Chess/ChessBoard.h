@@ -51,7 +51,6 @@ public:
     bool canbKingKcastle = true;
     bool canbKingQcastle = true;
 
-
     sf::Text text;
     std::vector<move> moves;
 
