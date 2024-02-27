@@ -550,6 +550,7 @@ bool ChessBoard::playMove(move req)
                     break;
                 }
             }
+
             if (!check)
             {
                 if (currBoard.arr[req.X][req.Y] == 4) {
@@ -567,7 +568,7 @@ bool ChessBoard::playMove(move req)
     return false;
 }
 
-bool ChessBoard::playMove(move req , board newboard , bool newturn , std::vector<move> movesthisTurn)
+bool ChessBoard::playMove(move req , board newboard , bool newturn , std::vector<move> movesthisTurn, bool* Checkmate)
 {
         move temp;
         bool check = false;
@@ -587,6 +588,7 @@ bool ChessBoard::playMove(move req , board newboard , bool newturn , std::vector
                         check = true;
                         newboard.arr[req.oX][req.oY] = newboard.arr[req.X][req.Y];
                         newboard.arr[req.X][req.Y] = tempm;
+                        
                         break;
                     }
                 }
@@ -599,6 +601,8 @@ bool ChessBoard::playMove(move req , board newboard , bool newturn , std::vector
 
             }
         }
+        
+        //*Checkmate = true;
         return false;
 }
 
@@ -653,17 +657,20 @@ board createnewboard(move m , board& currgoingboard) {
     return ans;
 }
 
-move ChessBoard::bestMove(board newboard,bool newturn, int depth) {
+move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate) {
     std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
     int itr = 0;
+    //bool Checkmate;
     if (depth == 0) {
         move m (-1,-1,-1,-1);
         while (itr<Movesthisturn.size())
         {
-            if (playMove(Movesthisturn[itr], newboard , newturn, Movesthisturn)) {
+            if (playMove(Movesthisturn[itr], newboard , newturn, Movesthisturn,Checkmate)) {
                 m = Movesthisturn[itr];
                 break;
             }
+            /*if (Checkmate)
+                continue;*/
             itr++;
         }
         return m;
@@ -675,23 +682,29 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth) {
 
     for (int i = 0; i < Movesthisturn.size(); ++i)
     {
-        if (playMove(Movesthisturn[i], newboard , newturn, Movesthisturn)) {
+        if (playMove(Movesthisturn[i], newboard, newturn, Movesthisturn, Checkmate)) {
             board recursionBoard = createnewboard(Movesthisturn[i], newboard);
-            move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1);
-            /*if (bestOpponentMove.X == -1) {
-                return move(-1, -1, -1, -1);
-            }*/
+            bool* checkmate = new bool(false);
+            move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1,checkmate);
             board bestOpponentBoard = createnewboard(bestOpponentMove, recursionBoard);
             int newScore = score(bestOpponentBoard);
-            if (newturn == 1 && (newScore >= oldScore) && newScore<50) {
+            if (newturn == 1 && (newScore >= oldScore) && newScore < 50) {
                 BestMove = Movesthisturn[i];
                 oldScore = newScore;
             }
-            if (newturn == 0 && oldScore >= newScore && oldScore>-50) {
+            if (newturn == 0 && oldScore >= newScore && oldScore > -50) {
                 BestMove = Movesthisturn[i];
                 oldScore = newScore;
             }
+            //Checkmate = false;
         }
+        else {
+            Movesthisturn.erase(Movesthisturn.begin() + i);
+            i--;
+        }
+    }
+    if (Movesthisturn.size() == 0) {
+        *Checkmate = true;
     }
     return BestMove;
 }
@@ -702,3 +715,12 @@ bool ChessBoard::nextTurn()
     turn = !turn;
     return turn;
 }
+
+////////////////ishi  pagallllllllll hai
+///ekdm pagal
+///ab isko  dekh kr bhi paglayega
+/// bola tha pagal hai
+/// heheheh
+/// i told ya
+/// achaaa last line..ishi tondlu hai
+/// heheheh ye to sach hai

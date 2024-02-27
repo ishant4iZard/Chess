@@ -200,16 +200,18 @@ bool ChessWindow::Update()
             if (event.mouseButton.button == sf::Mouse::Button::Left && !playBoard.getTurn()) {
                 std::cout << "What What\n";
                 std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
+
+                bool checkmate = false;
                 int numMoves = AImoves.size();
-                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 3);
-                if (m.X != -1 && m.oX != -1 && m.Y != -1, m.oY != -1) {
-                    if (playBoard.playMove(m)) {
-                        MapPieces(m);
-                        playBoard.nextTurn();
-                    }
+                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 3, &checkmate);
+                if (playBoard.playMove(m)) {
+                    MapPieces(m);
+                    playBoard.nextTurn();
                 }
-                else
-                    gameover = true;
+                if (checkmate) {
+                    window.close();
+                    return false;
+                }
             }
             else if (event.mouseButton.button == sf::Mouse::Button::Right)
             {
