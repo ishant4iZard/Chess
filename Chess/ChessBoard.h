@@ -42,8 +42,6 @@ private:
     void Bishop(std::vector<move>& moves, int x, int y, board newboard);
     void Knight(std::vector<move>& moves, int x, int y, board newboard);
 
-    //int score(board board);
-
 public:
     std::vector<move> getLegalMoves(board b, bool color);
     board currBoard;

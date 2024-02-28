@@ -4,6 +4,10 @@
 //pawn,king,knight are jumping pieces that can jump to their desired location
 //rook,bishop,Queen are sliding pieces that can slide to their desired location so can be stopped
 
+struct offset {
+    int x, y;
+};
+
 void ChessBoard::wPawn(std::vector<move>& moves, int x, int y, board newboard)
 {
     if (y > 0)
@@ -66,63 +70,17 @@ void ChessBoard::bPawn(std::vector<move>& moves, int x, int y, board newboard)
 void ChessBoard::King(std::vector<move>& moves, int x, int y, board newboard)//refine this code
 {
     bool pThreshold = newboard.arr[x][y] < 6;
-    if (x > 0)
-    {
-        if (newboard.arr[x - 1][y] == -1 || (pThreshold && newboard.arr[x - 1][y] > 5 ) || (!pThreshold && newboard.arr[x - 1][y] < 6 ))
-        {
-            moves.push_back(move(x, y, x - 1, y));
-        }
-    }
-    if (x > 0 && y > 0)
-    {
-        if (newboard.arr[x - 1][y - 1] == -1 || (pThreshold && newboard.arr[x - 1][y - 1] > 5 ) || (!pThreshold && newboard.arr[x - 1][y - 1] < 6 ))
-        {
-            moves.push_back(move(x, y, x - 1, y - 1));
-        }
-    }
-    if (x > 0 && y < 7)
-    {
-        if (newboard.arr[x - 1][y + 1] == -1 || (pThreshold && newboard.arr[x - 1][y + 1] > 5 ) || (!pThreshold && newboard.arr[x - 1][y + 1] < 6 ))
-        {
-            moves.push_back(move(x, y, x - 1, y + 1));
-        }
-    }
-    if (y > 0)
-    {
-        if (newboard.arr[x][y - 1] == -1 || (pThreshold && newboard.arr[x][y - 1] > 5 ) || (!pThreshold &&  newboard.arr[x][y - 1] < 6 ))
-        {
-            moves.push_back(move(x, y, x, y - 1));
-        }
-    }
-    if (y < 7)
-    {
-        if (newboard.arr[x][y + 1] == -1 || (pThreshold && newboard.arr[x][y + 1] > 5 ) || (!pThreshold && newboard.arr[x][y + 1] < 6))
-        {
-            moves.push_back(move(x, y, x, y + 1));
-        }
-    }
-    if (x < 7)
-    {
 
-        if (newboard.arr[x + 1][y] == -1 || (pThreshold && newboard.arr[x + 1][y] > 5 ) || !pThreshold && (newboard.arr[x + 1][y] < 6 ))
-        {
-            moves.push_back(move(x, y, x + 1, y));
-        }
-    }
-    if (x < 7 && y < 7)
-    {
+    offset Off[8] = { {1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
 
-        if (newboard.arr[x + 1][y + 1] == -1 || (pThreshold && newboard.arr[x + 1][y + 1] > 5) || (!pThreshold && newboard.arr[x + 1][y + 1] < 6 ))
-        {
-            moves.push_back(move(x, y, x + 1, y + 1));
-        }
-    }
-    if (x < 7 && y > 0)
-    {
-
-        if (newboard.arr[x + 1][y - 1] == -1 || (pThreshold && newboard.arr[x + 1][y - 1] > 5 ) || (!pThreshold && newboard.arr[x + 1][y - 1] < 6 ))
-        {
-            moves.push_back(move(x, y, x + 1, y - 1));
+    for (int i = 0; i < 8; i++) {
+        int newx = x + Off[i].x;
+        int newy = y + Off[i].y;
+        if (newx >= 0 && newx < 8 && newy >= 0 && newy < 8) {
+            if (newboard.arr[newx][newy] == -1 || (pThreshold && newboard.arr[newx][newy] > 5) || (!pThreshold && newboard.arr[newx][newy] < 6))
+            {
+                moves.push_back(move(x, y, newx, newy));
+            }
         }
     }
 }
@@ -130,63 +88,16 @@ void ChessBoard::King(std::vector<move>& moves, int x, int y, board newboard)//r
 void ChessBoard::Knight(std::vector<move>& moves, int x, int y, board newboard)
 {
     bool pThreshold = newboard.arr[x][y] < 6;
-    if (x > 0)
-    {
-        if (y < 6) {
-            if (newboard.arr[x - 1][y + 2] == -1 || (pThreshold && newboard.arr[x - 1][y + 2] > 5) || (!pThreshold && newboard.arr[x - 1][y + 2] < 6))
+
+    offset Off[8] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+
+    for (int i = 0; i < 8; i++) {
+        int newx = x + Off[i].x;
+        int newy = y + Off[i].y;
+        if (newx >= 0 && newx < 8 && newy >= 0 && newy < 8) {
+            if (newboard.arr[newx][newy] == -1 || (pThreshold && newboard.arr[newx][newy] > 5) || (!pThreshold && newboard.arr[newx][newy] < 6))
             {
-                moves.push_back(move(x, y, x - 1, y + 2));
-            }
-        }
-        if (y > 1) {
-            if (newboard.arr[x - 1][y - 2] == -1 || (pThreshold && newboard.arr[x - 1][y - 2] > 5) || (!pThreshold && newboard.arr[x - 1][y - 2] < 6))
-            {
-                moves.push_back(move(x, y, x - 1, y - 2));
-            }
-        }
-    }
-    if (x > 1)
-    {
-        if (y < 7) {
-            if (newboard.arr[x - 2][y + 1] == -1 || (pThreshold && newboard.arr[x - 2][y + 1] > 5) || (!pThreshold && newboard.arr[x - 2][y + 1] < 6))
-            {
-                moves.push_back(move(x, y, x - 2, y + 1));
-            }
-        }
-        if (y > 0) {
-            if (newboard.arr[x - 2][y - 1] == -1 || (pThreshold && newboard.arr[x - 2][y - 1] > 5) || (!pThreshold && newboard.arr[x - 2][y - 1] < 6))
-            {
-                moves.push_back(move(x, y, x - 2, y - 1));
-            }
-        }
-    }
-    if (x < 7)
-    {
-        if (y < 6) {
-            if (newboard.arr[x + 1][y + 2] == -1 || (pThreshold && newboard.arr[x + 1][y + 2] > 5) || (!pThreshold && newboard.arr[x + 1][y + 2] < 6))
-            {
-                moves.push_back(move(x, y, x + 1, y + 2));
-            }
-        }
-        if (y > 1) {
-            if (newboard.arr[x + 1][y - 2] == -1 || (pThreshold && newboard.arr[x + 1][y - 2] > 5) || (!pThreshold && newboard.arr[x + 1][y - 2] < 6))
-            {
-                moves.push_back(move(x, y, x + 1, y - 2));
-            }
-        }
-    }
-    if (x < 6)
-    {
-        if (y < 7) {
-            if (newboard.arr[x + 2][y + 1] == -1 || (pThreshold && newboard.arr[x + 2][y + 1] > 5) || (!pThreshold && newboard.arr[x + 2][y + 1] < 6))
-            {
-                moves.push_back(move(x, y, x + 2, y + 1));
-            }
-        }
-        if (y > 0) {
-            if (newboard.arr[x + 2][y - 1] == -1 || (pThreshold && newboard.arr[x + 2][y - 1] > 5) || (!pThreshold && newboard.arr[x + 2][y - 1] < 6))
-            {
-                moves.push_back(move(x, y, x + 2, y - 1));
+                moves.push_back(move(x, y, newx, newy));
             }
         }
     }
@@ -218,78 +129,34 @@ void SlideHelper(std::vector<move>& moves, bool pThreshold, int x, int y, int of
 void ChessBoard::Rook(std::vector<move>& moves, int x, int y, board newboard)
 {
     bool pThreshold = newboard.arr[x][y] < 6;
-    int offX = 0;
-    int offY = 0;
-    bool stop = false;
-    while (!stop)
-    {
-        ++offX;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
-    }
-    offX = 0;
-    offY = 0;
-    stop = false;
-    while (!stop)
-    {
-        --offX;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
-    }
-    offX = 0;
-    offY = 0;
-    stop = false;
-    while (!stop)
-    {
-        ++offY;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
-    }
-    offX = 0;
-    offY = 0;
-    stop = false;
-    while (!stop)
-    {
-        --offY;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
+
+    offset Off[4] = { { 1,0 }, {-1, 0},{0,1},{0,-1} };
+
+    for (int i = 0; i < 4; i++) {
+        bool stop = false;
+        int multiplier = 1;
+        while (!stop)
+        {
+            SlideHelper(moves, pThreshold, x, y, Off[i].x * multiplier, Off[i].y * multiplier, newboard, &stop);
+            multiplier++;
+        }
     }
 }
 
 void ChessBoard::Bishop(std::vector<move>& moves, int x, int y, board newboard)
 {
     bool pThreshold = newboard.arr[x][y] < 6;
-    int offX = 0;
-    int offY = 0;
-    bool stop = false;
-    while (!stop)
-    {
-        ++offX;
-        ++offY;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
-    }
-    offX = 0;
-    offY = 0;
-    stop = false;
-    while (!stop)
-    {
-        --offX;
-        --offY;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
-    }
-    offX = 0;
-    offY = 0;
-    stop = false;
-    while (!stop)
-    {
-        --offX;
-        ++offY;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
-    }
-    offX = 0;
-    offY = 0;
-    stop = false;
-    while (!stop)
-    {
-        ++offX;
-        --offY;
-        SlideHelper(moves, pThreshold, x, y, offX, offY, newboard, &stop);
+
+    offset Off[4] = { { 1,1 }, {-1, 1},{1,-1},{-1,-1} };
+
+    for (int i = 0; i < 4; i++) {
+        bool stop = false;
+        int multiplier = 1;
+        while (!stop)
+        {
+            SlideHelper(moves, pThreshold, x, y, Off[i].x * multiplier, Off[i].y * multiplier, newboard, &stop);
+            multiplier++;
+        }
     }
 }
 
