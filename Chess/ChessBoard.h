@@ -46,7 +46,7 @@ public:
     std::vector<move> getLegalMoves(board b, bool color);
     board currBoard;
     bool playMove(move req);
-    bool playMoveAI(move req , board newboard , bool newturn, std::vector<move> movesthisTurn, bool* Checkmate);
+    bool playMoveAI(move req , board newboard , bool newturn, std::vector<move> movesthisTurn, bool* Checkmate );
     bool nextTurn();
     bool canwKingQcastle = true;
     bool canwKingKcastle = true;
@@ -60,7 +60,7 @@ public:
         return turn;
     }
 
-    move bestMove(board newboard, bool turn, int depth,bool *Checkmate);
+    move bestMove(board newboard, bool turn, int depth,bool *Checkmate, bool* isMeCheckmate);
 
     int score(int i);
     board createnewboard(move m, board& currgoingboard);

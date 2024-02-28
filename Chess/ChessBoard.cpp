@@ -119,7 +119,7 @@ board ChessBoard::createnewboard(move m , board& currgoingboard) {
     return ans;
 }
 
-move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate) {
+move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate , bool* isMeCheckmate) {
     std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
     int itr = 0;
     if (depth == 0) {
@@ -144,18 +144,31 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
         if (playMoveAI(Movesthisturn[i], newboard, newturn, Movesthisturn, Checkmate)) {
             board recursionBoard = createnewboard(Movesthisturn[i], newboard);
             bool* checkmate = new bool(false);
-            move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1,checkmate);
+            bool* ismecheckmate = new bool(false);
+            move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1, checkmate , ismecheckmate);
+            if (*checkmate) {
+                delete checkmate;
+                delete ismecheckmate;
+                *isMeCheckmate = true;
+                return Movesthisturn[i];
+            }
+            if (*ismecheckmate) {
+                delete checkmate;
+                delete ismecheckmate;
+                continue;
+            }
             board bestOpponentBoard = createnewboard(bestOpponentMove, recursionBoard);
             int newScore = bestOpponentBoard.score;
             if (newturn == 1 && (newScore > oldScore) && newScore < 50) {
                 BestMove = Movesthisturn[i];
                 oldScore = newScore;
             }
-            if (newturn == 0 && (oldScore > newScore) && oldScore > -50) {
+            if (newturn == 0 && (oldScore > newScore) && newScore > -50) {
                 BestMove = Movesthisturn[i];
                 oldScore = newScore;
             }
             delete checkmate;
+            delete ismecheckmate;
         }
         else {
             Movesthisturn.erase(Movesthisturn.begin() + i);

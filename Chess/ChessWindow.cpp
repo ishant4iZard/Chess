@@ -173,8 +173,10 @@ bool ChessWindow::Update()
                     else
                     {
                         bool checkmate = false;
+                        bool isMeCheckmate = false;
+
                         move m(selected[0], selected[1], projX, projY);
-                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate);
+                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &isMeCheckmate);
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1, bestmove.oY != -1) {
                             if (playBoard.playMove(m))
                             {
@@ -195,8 +197,9 @@ bool ChessWindow::Update()
                 std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
 
                 bool checkmate = false;
+                bool isMeCheckmate = false;
                 int numMoves = AImoves.size();
-                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate);
+                move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
                 if (playBoard.playMove(m)) {
                     MapPieces(m);
                     playBoard.nextTurn();
