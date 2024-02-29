@@ -29,10 +29,13 @@ private:
 
 	int offsetx = 5, offsety = 0;
 
+
 	bool gameover;
+	//bool startgame = false;
 	
 public:
 
+	bool whiteplayplayer = 0, blackplayplayer = 1;
 	ChessWindow(int width, int height, const char* name, const char* imgPath[12]);
 	bool Update();
 	//~ChessWindow();

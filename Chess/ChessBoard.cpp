@@ -25,6 +25,22 @@ bool ChessBoard::playMove(move req)
             int tempms = score(tempm);
             currBoard.arr[req.X][req.Y] = currBoard.arr[req.oX][req.oY];
             currBoard.arr[req.oX][req.oY] = -1;
+            if (currBoard.arr[req.X][req.Y] == 4 && req.X - req.oX == 2) {
+                currBoard.arr[5][7] = 1;
+                currBoard.arr[7][7] = -1;
+            }
+            if (currBoard.arr[req.X][req.Y] == 4 && req.oX - req.X == 2) {
+                currBoard.arr[3][7] = 1;
+                currBoard.arr[0][7] = -1;
+            }
+            if (currBoard.arr[req.X][req.Y] == 10 && req.X - req.oX == 2) {
+                currBoard.arr[5][0] = 7;
+                currBoard.arr[7][0] = -1;
+            }
+            if (currBoard.arr[req.X][req.Y] == 10 && req.X - req.oX == 2) {
+                currBoard.arr[3][0] = 7;
+                currBoard.arr[7][0] = -1;
+            }
             std::vector<move> tempMoves = getLegalMoves(currBoard, !turn);
             for (int j = 0; j < tempMoves.size(); ++j)
             {
@@ -64,9 +80,24 @@ bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vect
         if (temp.oX == req.oX && temp.oY == req.oY && temp.X == req.X && temp.Y == req.Y && !check)
         {
             int tempm = newboard.arr[req.X][req.Y];
-            int tempms = score(tempm);
             newboard.arr[req.X][req.Y] = newboard.arr[req.oX][req.oY];
             newboard.arr[req.oX][req.oY] = -1;
+            if (newboard.arr[req.X][req.Y] == 4 && req.X - req.oX == 2) {
+                newboard.arr[5][7] = 1;
+                newboard.arr[7][7] = -1;
+            }   
+            if (newboard.arr[req.X][req.Y] == 4 && req.oX - req.X == 2) {
+                newboard.arr[3][7] = 1;
+                newboard.arr[0][7] = -1;
+            }   
+            if (newboard.arr[req.X][req.Y] == 10 && req.X - req.oX == 2) {
+                newboard.arr[5][0] = 7;
+                newboard.arr[7][0] = -1;
+            }   
+            if (newboard.arr[req.X][req.Y] == 10 && req.X - req.oX == 2) {
+                newboard.arr[3][0] = 7;
+                newboard.arr[7][0] = -1;
+            }
             std::vector<move> tempMoves = getLegalMoves(newboard, !newturn);
             for (int j = 0; j < tempMoves.size(); ++j)
             {
@@ -83,14 +114,11 @@ bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vect
             {
                 newboard.arr[req.oX][req.oY] = newboard.arr[req.X][req.Y];
                 newboard.arr[req.X][req.Y] = tempm;
-                newboard.updateScore(tempms);
                 return true;
             }
 
         }
     }
-        
-    //*Checkmate = true;
     return false;
 }
 
@@ -135,6 +163,8 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
         return m;
     }
 
+    std::vector<move> BestMoves;
+    std::vector<move> ForcedMoves;
     move BestMove;
     int oldScore = newturn == 1 ? (INT_MIN) : (INT_MAX);
 
@@ -143,32 +173,29 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
     {
         if (playMoveAI(Movesthisturn[i], newboard, newturn, Movesthisturn, Checkmate)) {
             board recursionBoard = createnewboard(Movesthisturn[i], newboard);
-            bool* checkmate = new bool(false);
-            bool* ismecheckmate = new bool(false);
-            move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1, checkmate , ismecheckmate);
-            if (*checkmate) {
-                delete checkmate;
-                delete ismecheckmate;
+            bool checkmate = false;
+            bool ismecheckmate = false;
+            move bestOpponentMove = bestMove(recursionBoard, !newturn, depth - 1, &checkmate , &ismecheckmate);
+            if (checkmate) {
                 *isMeCheckmate = true;
                 return Movesthisturn[i];
             }
-            if (*ismecheckmate) {
-                delete checkmate;
-                delete ismecheckmate;
+            if (ismecheckmate) {
+                ForcedMoves.push_back(Movesthisturn[i]);
                 continue;
             }
             board bestOpponentBoard = createnewboard(bestOpponentMove, recursionBoard);
             int newScore = bestOpponentBoard.score;
-            if (newturn == 1 && (newScore > oldScore) && newScore < 50) {
+            if ((newturn == 1 && (newScore > oldScore)) || (newturn == 0 && (oldScore > newScore))) {
+                BestMoves.clear();
                 BestMove = Movesthisturn[i];
+                BestMoves.push_back(BestMove);
                 oldScore = newScore;
             }
-            if (newturn == 0 && (oldScore > newScore) && newScore > -50) {
+            if (oldScore == newScore) {
                 BestMove = Movesthisturn[i];
-                oldScore = newScore;
+                BestMoves.push_back(BestMove);
             }
-            delete checkmate;
-            delete ismecheckmate;
         }
         else {
             Movesthisturn.erase(Movesthisturn.begin() + i);
@@ -177,6 +204,16 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
     }
     if (Movesthisturn.size() == 0) {
         *Checkmate = true;
+    }
+    if (BestMoves.size()!=0) {
+        int random = (rand() * rand() % BestMoves.size());
+        BestMove = BestMoves[random];
+    }
+    else {
+        if (ForcedMoves.size() != 0) {
+            int random = (rand() * rand() % ForcedMoves.size());
+            BestMove = ForcedMoves[random];
+        }
     }
     return BestMove;
 }

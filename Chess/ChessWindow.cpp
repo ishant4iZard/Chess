@@ -147,7 +147,7 @@ bool ChessWindow::Update()
             FitToHolder();
             break;
         case sf::Event::MouseButtonPressed:
-            if (event.mouseButton.button == sf::Mouse::Button::Left && playBoard.getTurn())
+            if (event.mouseButton.button == sf::Mouse::Button::Left && ((whiteplayplayer && playBoard.getTurn()) || (blackplayplayer && !playBoard.getTurn())))
             {
                 int pX, pY;
                 pX = event.mouseButton.x;
@@ -177,10 +177,28 @@ bool ChessWindow::Update()
 
                         move m(selected[0], selected[1], projX, projY);
                         move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &isMeCheckmate);
-                        if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1, bestmove.oY != -1) {
+                        if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
                             if (playBoard.playMove(m))
                             {
                                 MapPieces(m);
+#pragma region Castle
+                                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)  
+                                {
+                                        MapPieces(move(7, 7, 5, 7));
+                                }
+                                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)  
+                                {
+                                        MapPieces(move(0, 7, 3, 7));
+                                }
+                                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)  
+                                {
+                                        MapPieces(move(0, 0, 5, 0));
+                                }
+                                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)  
+                                {
+                                        MapPieces(move(0, 7, 3, 0));
+                                }
+#pragma endregion
                                 playBoard.nextTurn();
                             }
                         }
@@ -192,7 +210,7 @@ bool ChessWindow::Update()
                     }
                 }
             }
-            if (event.mouseButton.button == sf::Mouse::Button::Left && !playBoard.getTurn()) {
+            if (event.mouseButton.button == sf::Mouse::Button::Left && ((!whiteplayplayer && playBoard.getTurn()) || (!blackplayplayer && !playBoard.getTurn()))) {
                 //std::cout << "What What\n";
                 std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
 
@@ -200,8 +218,27 @@ bool ChessWindow::Update()
                 bool isMeCheckmate = false;
                 int numMoves = AImoves.size();
                 move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
-                if (playBoard.playMove(m)) {
+                if (playBoard.playMove(m))
+                {
                     MapPieces(m);
+#pragma region Castle
+                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
+                    {
+                        MapPieces(move(7, 7, 5, 7));
+                    }
+                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
+                    {
+                        MapPieces(move(0, 7, 3, 7));
+                    }
+                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
+                    {
+                        MapPieces(move(0, 0, 5, 0));
+                    }
+                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
+                    {
+                        MapPieces(move(0, 0, 3, 0));
+                    }
+#pragma endregion
                     playBoard.nextTurn();
                 }
                 if (checkmate) {

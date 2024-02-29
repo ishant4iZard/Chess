@@ -19,6 +19,7 @@ const char* defaultimg[12] = {  "./Assets/Pieces/Def/wp.png",
                                 "./Assets/Pieces/Def/bq.png" };
 
 int main() {
+    srand(time(NULL));
 	ChessWindow window(800, 800, "chess", defaultimg);
 
 	while (window.Update()) {
