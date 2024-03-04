@@ -39,7 +39,7 @@ bool ChessBoard::playMove(move req)
             }
             if (currBoard.arr[req.X][req.Y] == 10 && req.X - req.oX == 2) {
                 currBoard.arr[3][0] = 7;
-                currBoard.arr[7][0] = -1;
+                currBoard.arr[0][0] = -1;
             }
             std::vector<move> tempMoves = getLegalMoves(currBoard, !turn);
             for (int j = 0; j < tempMoves.size(); ++j)
@@ -96,7 +96,7 @@ bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vect
             }   
             if (newboard.arr[req.X][req.Y] == 10 && req.X - req.oX == 2) {
                 newboard.arr[3][0] = 7;
-                newboard.arr[7][0] = -1;
+                newboard.arr[0][0] = -1;
             }
             std::vector<move> tempMoves = getLegalMoves(newboard, !newturn);
             for (int j = 0; j < tempMoves.size(); ++j)
@@ -166,7 +166,7 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
     std::vector<move> BestMoves;
     std::vector<move> ForcedMoves;
     move BestMove;
-    int oldScore = newturn == 1 ? (INT_MIN) : (INT_MAX);
+    int oldScore = newturn == 1 ? (-INT_MAX) : (INT_MAX);
 
 
     for (int i = 0; i < Movesthisturn.size(); ++i)
