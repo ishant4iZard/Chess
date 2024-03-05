@@ -12,7 +12,7 @@ struct move
 };
 struct board
 {
-    /*int arr[8][8] = { 
+    int arr[8][8] = { 
         {7, 6, -1, -1, -1, -1, 0, 1},
         {8, 6, -1, -1, -1, -1, 0, 2},
         {9, 6, -1, -1, -1, -1, 0, 3},
@@ -21,9 +21,9 @@ struct board
         {9, 6, -1, -1, -1, -1, 0, 3},
         {8, 6, -1, -1, -1, -1, 0, 2},
         {7, 6, -1, -1, -1, -1, 0, 1} 
-    };*/
+    };
     //buggy algo for this
-    int arr[8][8] = {
+    /*int arr[8][8] = {
         {7, -1, 6, -1, -1, -1, 0, 1},
         {8, -1, -1, 6, -1, 3, 0, 2},
         {9, 6, -1, -1, -1, -1, 0, 3},
@@ -32,7 +32,7 @@ struct board
         {9, 6, -1, -1, -1, -1, 0, -1},
         {8, 6, -1, -1, -1, -1, 0, 2},
         {7, -1, -1, 6, -1, -1, 0, 1}
-    };
+    };*/
     int score = 0;
 
     void updateScore(int a) {
@@ -57,6 +57,7 @@ private:
     int MinMaxRecursion(board newboard, bool newturn,int depth ,bool* Checkmate,move &RecursionBestMove);
     int NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove);
     int NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate,int alpha , int beta, move& RecursionBestMove);
+    void sortMoves(std::vector<move>& movesThisTurn, board newboard,bool newTurn);
 
 public:
     std::vector<move> getLegalMoves(board b, bool color);
@@ -85,4 +86,6 @@ public:
 
     int score(int i);
     board createnewboard(move m, board& currgoingboard);
+
+    void quicksort(std::vector<move>& vec, int L, int R, board newboard, bool newturn);
 };

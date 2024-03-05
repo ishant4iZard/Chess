@@ -6,7 +6,7 @@ void ChessWindow::FitToHolder() {
 		for (int j = 0; j < 8; j++) {
 			Squares[i][j].setPosition(sf::Vector2f(Holder.left + (i * Holder.width / 8), Holder.top + (j * Holder.height / 8)));
 			Squares[i][j].setSize(sf::Vector2f(Holder.width / 8, Holder.height / 8));
-			Squares[i][j].setFillColor((i + j) % 2 == 0 ? color[0] : color[1]);
+			Squares[i][j].setFillColor((i + j) % 2 == 1 ? color[0] : color[1]);
 		}
 	}
 }
@@ -229,6 +229,7 @@ bool ChessWindow::Update()
                 int numMoves = AImoves.size();
                 //move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
                 move m = playBoard.NegaMaxRecursionhelper (playBoard.currBoard, playBoard.getTurn(), &checkmate);
+                //move m = playBoard.MinMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate);
 
                 if (playBoard.playMove(m))
                 {
