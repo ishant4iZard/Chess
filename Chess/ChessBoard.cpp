@@ -1,6 +1,7 @@
 #include <vector>
 #include "chessBoard.h"
 #include<thread>
+#include <iostream>
 
 move::move(int oldX, int oldY, int newX, int newY)
 {
@@ -70,7 +71,7 @@ bool ChessBoard::playMove(move req)
     return false;
 }
 
-bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vector<move> movesthisTurn, bool* Checkmate)
+bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vector<move> movesthisTurn)
 {
     move temp;
     bool check = false;
@@ -154,7 +155,7 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
         move m (-1,-1,-1,-1);
         while (itr<Movesthisturn.size())
         {
-            if (playMoveAI(Movesthisturn[itr], newboard , newturn, Movesthisturn,Checkmate)) {
+            if (playMoveAI(Movesthisturn[itr], newboard , newturn, Movesthisturn)) {
                 m = Movesthisturn[itr];
                 break;
             }
@@ -171,7 +172,7 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
 
     for (int i = 0; i < Movesthisturn.size(); ++i)
     {
-        if (playMoveAI(Movesthisturn[i], newboard, newturn, Movesthisturn, Checkmate)) {
+        if (playMoveAI(Movesthisturn[i], newboard, newturn, Movesthisturn)) {
             board recursionBoard = createnewboard(Movesthisturn[i], newboard);
             bool checkmate = false;
             bool ismecheckmate = false;
@@ -216,6 +217,240 @@ move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate
         }
     }
     return BestMove;
+}
+
+move ChessBoard::MinMax(board newboard, bool newturn, bool* Checkmate) {
+    int TurnMultipler = newturn ? 1 : -1;
+    int opponentMinMaxScore = INT_MAX;
+    move bestMove(-1, -1, -1, -1);
+    std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
+    std::vector<move> BestMoves;
+    std::vector<move> ForcedMoves;
+
+    for (auto mymoves : Movesthisturn) {
+        int opponentMaxScore = INT_MIN;
+        int score;
+        if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
+            board recursionBoard = createnewboard(mymoves, newboard);
+            std::vector<move> OpponentMovesthisTurn = getLegalMoves(recursionBoard, !newturn);
+            std::vector<move> BestOpponentMoves;
+            std::vector<move> ForcedOpponentMoves;
+
+            for (auto opponentmove : OpponentMovesthisTurn) {
+                if (playMoveAI(opponentmove, recursionBoard, !newturn, OpponentMovesthisTurn)) {
+                    board OpponentrecursionBoard = createnewboard(opponentmove, recursionBoard);
+                    score = -TurnMultipler * OpponentrecursionBoard.score;
+                    if (score > opponentMaxScore) {
+                        opponentMaxScore = score;
+                        BestOpponentMoves.clear();
+                        BestOpponentMoves.push_back(opponentmove);
+                    }
+                    else if (score == opponentMaxScore) {
+                        BestOpponentMoves.push_back(opponentmove);
+                    }
+                }
+            }
+            if (BestOpponentMoves.size() == 0) {
+                return mymoves;
+            }
+            if (opponentMaxScore < opponentMinMaxScore) {
+                opponentMinMaxScore = opponentMaxScore;
+                BestMoves.clear();
+                BestMoves.push_back(mymoves);
+            }
+            else if (opponentMaxScore == opponentMinMaxScore) {
+                BestMoves.push_back(mymoves);
+            }
+        }
+    }
+    if (BestMoves.size() == 0) {
+        *Checkmate = true;
+    }
+    else {
+        int random = (rand() * rand() % BestMoves.size());
+        bestMove = BestMoves[random];
+    }
+    return bestMove;
+}
+
+
+
+
+int ChessBoard::MinMaxRecursion(board newboard, bool newturn, int depth ,bool* Checkmate, move& RecursionBestMove)
+{
+    if (depth == 0) {
+        return newboard.score;
+    }
+    std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
+    std::vector<move> BestMoves;
+    std::vector<move> ForcedMoves;
+
+    int score;
+
+    if (newturn) {
+        int maxscore = -INT_MAX;
+        for (auto mymoves : Movesthisturn) {
+            if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
+                board myBoard = createnewboard(mymoves, newboard);
+                bool checkmate;
+                score = MinMaxRecursion(myBoard, false, depth - 1, &checkmate, RecursionBestMove);
+                if (score > maxscore) {
+                    maxscore = score;
+                    BestMoves.clear();
+                    BestMoves.push_back(mymoves);
+                }
+                else if (score == maxscore && depth == Depth) {
+                    BestMoves.push_back(mymoves);
+                }
+            }
+        }
+        if (depth == Depth) {
+            if (BestMoves.size() == 0) {
+                *Checkmate = true;
+            }
+            if(BestMoves.size()) {
+                int random = (rand() * rand() % BestMoves.size());
+                RecursionBestMove = BestMoves[random];
+            }
+        }
+        return maxscore;
+    }
+    else {
+        int minscore = INT_MAX;
+        for (auto mymoves : Movesthisturn) {
+            if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
+                board myBoard = createnewboard(mymoves, newboard);
+                bool checkmate;
+                score = MinMaxRecursion(myBoard, true, depth - 1, &checkmate, RecursionBestMove);
+                if (score < minscore) {
+                    minscore = score;
+                    BestMoves.clear();
+                    BestMoves.push_back(mymoves);
+                }
+                else if (score == minscore && depth == Depth) {
+                    BestMoves.push_back(mymoves);
+                }
+            }
+        }
+        if (depth == Depth) {
+            if (BestMoves.size() == 0) {
+                *Checkmate = true;
+            }
+            if (BestMoves.size()) {
+                int random = (rand() * rand() % BestMoves.size());
+                RecursionBestMove = BestMoves[random];
+            }
+        }
+        return minscore;
+    }   
+}
+
+move ChessBoard::MinMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate)
+{
+    move RecursionBestMove(-1,-1,-1,-1);
+    MinMaxRecursion(newboard, newturn,Depth ,Checkmate, RecursionBestMove);
+    return RecursionBestMove;
+}
+
+int ChessBoard::NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove)
+{
+    int turnMultiplier = newturn ? 1 : -1;
+    if (depth == 0) {
+        return turnMultiplier * newboard.score;
+    }
+    std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
+    std::vector<move> BestMoves;
+    std::vector<move> ForcedMoves;
+
+    int score;
+
+    int maxscore = -INT_MAX;
+    for (auto mymoves : Movesthisturn) {
+        if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
+            counter++;
+
+            board myBoard = createnewboard(mymoves, newboard);
+            bool checkmate;
+            score = -NegaMaxRecursion(myBoard, !newturn, depth - 1, &checkmate, RecursionBestMove);
+            if (score > maxscore) {
+                maxscore = score;
+                BestMoves.clear();
+                BestMoves.push_back(mymoves);
+            }
+            else if (score == maxscore && depth == Depth) {
+                BestMoves.push_back(mymoves);
+            }
+        }
+    }
+    if (depth == Depth) {
+        if (BestMoves.size() == 0) {
+            *Checkmate = true;
+        }
+        else {
+            int random = (rand() * rand() % BestMoves.size());
+            RecursionBestMove = BestMoves[random];
+        }
+    }
+    return maxscore;
+}
+
+int ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate, int alpha, int beta, move& RecursionBestMove) {
+    int turnMultiplier = newturn ? 1 : -1;
+    if (depth == 0) {
+        return turnMultiplier * newboard.score;
+    }
+    std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
+    std::vector<move> BestMoves;
+    std::vector<move> ForcedMoves;
+
+    int score;
+
+    int maxscore = -INT_MAX;
+    for (auto mymoves : Movesthisturn) {
+        if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
+            counter++;
+            board myBoard = createnewboard(mymoves, newboard);
+            bool checkmate;
+            score = -NegaMaxRecursionAlphaBeta(myBoard, !newturn, depth - 1, &checkmate, -beta, -alpha, RecursionBestMove);
+            if (score > maxscore) {
+                maxscore = score;
+                BestMoves.clear();
+                BestMoves.push_back(mymoves);
+            }
+            else if (score == maxscore && depth == Depth) {
+                BestMoves.push_back(mymoves);
+            }
+            if (maxscore > alpha) {
+                alpha = maxscore;
+            }
+            if (alpha >= beta) {
+                break;
+            }
+        }
+    }
+    if (depth == Depth) {
+        if (BestMoves.size() == 0) {
+            *Checkmate = true;
+        }
+        else {
+            int random = (rand() * rand() % BestMoves.size());
+            RecursionBestMove = BestMoves[random];
+        }
+    }
+    return maxscore;
+}
+
+
+move ChessBoard::NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate)
+{
+    move RecursionBestMove(-1, -1, -1, -1);
+    int alpha = -INT_MAX;
+    int beta = INT_MAX;
+    NegaMaxRecursionAlphaBeta (newboard, newturn, Depth, Checkmate,alpha ,beta ,RecursionBestMove);
+    //NegaMaxRecursion(newboard, newturn, Depth, Checkmate,RecursionBestMove);
+
+    std::cout << counter<<"\n";
+    return RecursionBestMove;
 }
 
 bool ChessBoard::nextTurn()

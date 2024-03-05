@@ -33,6 +33,7 @@ class ChessBoard
 private:
     bool turn = 1;
     std::vector<board> history;
+    int Depth = 4;
 
     void wPawn(std::vector<move>& moves, int x, int y, board newboard);
     void bPawn(std::vector<move>& moves, int x, int y, board newboard);
@@ -42,11 +43,15 @@ private:
     void Bishop(std::vector<move>& moves, int x, int y, board newboard);
     void Knight(std::vector<move>& moves, int x, int y, board newboard);
 
+    int MinMaxRecursion(board newboard, bool newturn,int depth ,bool* Checkmate,move &RecursionBestMove);
+    int NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove);
+    int NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate,int alpha , int beta, move& RecursionBestMove);
+
 public:
     std::vector<move> getLegalMoves(board b, bool color);
     board currBoard;
     bool playMove(move req);
-    bool playMoveAI(move req , board newboard , bool newturn, std::vector<move> movesthisTurn, bool* Checkmate );
+    bool playMoveAI(move req , board newboard , bool newturn, std::vector<move> movesthisTurn );
     bool nextTurn();
     bool canwKingQcastle = true;
     bool canwKingKcastle = true;
@@ -56,11 +61,16 @@ public:
     sf::Text text;
     std::vector<move> moves;
 
+    int counter = 0;
+
     bool getTurn() {
         return turn;
     }
 
     move bestMove(board newboard, bool turn, int depth,bool *Checkmate, bool* isMeCheckmate);
+    move MinMax(board newboard, bool newturn, bool* Checkmate);
+    move MinMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
+    move NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
 
     int score(int i);
     board createnewboard(move m, board& currgoingboard);
