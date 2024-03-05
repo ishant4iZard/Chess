@@ -192,11 +192,11 @@ bool ChessWindow::Update()
                                 }
                                 if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)  
                                 {
-                                        MapPieces(move(0, 0, 5, 0));
+                                        MapPieces(move(7, 0, 5, 0));
                                 }
                                 if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)  
                                 {
-                                        MapPieces(move(0, 7, 3, 0));
+                                        MapPieces(move(0, 0, 3, 0));
                                 }
 #pragma endregion
                                 playBoard.nextTurn();
@@ -219,6 +219,7 @@ bool ChessWindow::Update()
                 int numMoves = AImoves.size();
                 //move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
                 move m = playBoard.NegaMaxRecursionhelper (playBoard.currBoard, playBoard.getTurn(), &checkmate);
+
                 if (playBoard.playMove(m))
                 {
                     MapPieces(m);
@@ -233,7 +234,7 @@ bool ChessWindow::Update()
                     }
                     if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
                     {
-                        MapPieces(move(0, 0, 5, 0));
+                        MapPieces(move(7, 0, 5, 0));
                     }
                     if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
                     {
