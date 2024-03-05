@@ -83,16 +83,16 @@ void ChessBoard::King(std::vector<move>& moves, int x, int y, board newboard)//r
             }
         }
     }
-    if (pThreshold && x == 4 && y == 7 && newboard.arr[x + 3][y] == 1 && newboard.arr[x + 1][y] == -1 && newboard.arr[x + 2][y] == -1) {
+    if (pThreshold && x == 4 && y == 7 && newboard.arr[x + 3][y] == 1 && newboard.arr[x + 1][y] == -1 && newboard.arr[x + 2][y] == -1&&canwKingKcastle) {
         moves.push_back(move(x, y, x + 2, y));
     }
-    if (pThreshold && x == 4 && y == 7 && newboard.arr[x -4][y] == 1 && newboard.arr[x - 1][y] == -1 && newboard.arr[x - 2][y] == -1 && newboard.arr[x - 3][y] == -1) {
+    if (pThreshold && x == 4 && y == 7 && newboard.arr[x -4][y] == 1 && newboard.arr[x - 1][y] == -1 && newboard.arr[x - 2][y] == -1 && newboard.arr[x - 3][y] == -1 && canwKingQcastle) {
         moves.push_back(move(x, y, x - 2, y));
     }
-    if (!pThreshold && x == 4 && y == 0 && newboard.arr[x + 3][y] == 7 && newboard.arr[x + 1][y] == -1 && newboard.arr[x + 2][y] == -1) {
+    if (!pThreshold && x == 4 && y == 0 && newboard.arr[x + 3][y] == 7 && newboard.arr[x + 1][y] == -1 && newboard.arr[x + 2][y] == -1 && canbKingKcastle) {
         moves.push_back(move(x, y, x + 2, y));
     }
-    if (!pThreshold && x == 4 && y == 0 && newboard.arr[x - 4][y] == 7 && newboard.arr[x - 1][y] == -1 && newboard.arr[x - 2][y] == -1 && newboard.arr[x - 3][y] == -1) {
+    if (!pThreshold && x == 4 && y == 0 && newboard.arr[x - 4][y] == 7 && newboard.arr[x - 1][y] == -1 && newboard.arr[x - 2][y] == -1 && newboard.arr[x - 3][y] == -1 && canbKingQcastle) {
         moves.push_back(move(x, y, x - 2, y));
     }
 }

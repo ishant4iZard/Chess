@@ -417,7 +417,7 @@ int ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int dept
                 BestMoves.clear();
                 BestMoves.push_back(mymoves);
             }
-            else if (score == maxscore && depth == Depth) {
+            else if (score == maxscore && depth == Depth && score!=-INT_MAX) {
                 BestMoves.push_back(mymoves);
             }
             if (maxscore > alpha) {

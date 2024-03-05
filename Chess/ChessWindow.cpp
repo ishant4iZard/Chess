@@ -180,6 +180,16 @@ bool ChessWindow::Update()
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
                             if (playBoard.playMove(m))
                             {
+                                if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
+                                    playBoard.canwKingKcastle = false;
+                                    playBoard.canwKingQcastle = false;
+                                }
+                                if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
+                                    playBoard.canbKingKcastle = false;
+                                    playBoard.canbKingQcastle = false;
+                                }
+
+
                                 MapPieces(m);
 #pragma region Castle
                                 if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)  
@@ -222,6 +232,14 @@ bool ChessWindow::Update()
 
                 if (playBoard.playMove(m))
                 {
+                    if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
+                        playBoard.canwKingKcastle = false;
+                        playBoard.canwKingQcastle = false;
+                    }
+                    if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
+                        playBoard.canbKingKcastle = false;
+                        playBoard.canbKingQcastle = false;
+                    }
                     MapPieces(m);
 #pragma region Castle
                     if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
