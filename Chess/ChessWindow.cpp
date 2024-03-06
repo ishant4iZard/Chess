@@ -188,6 +188,18 @@ bool ChessWindow::Update()
                                     playBoard.canbKingKcastle = false;
                                     playBoard.canbKingQcastle = false;
                                 }
+                                if ((m.oX == 7&& m.oY == 7)|| (m.X == 7 && m.Y == 7)) {
+                                    playBoard.canwKingKcastle = false;
+                                }
+                                if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
+                                    playBoard.canwKingQcastle = false;
+                                }
+                                if ((m.oX == 7 && m.oY == 0) || (m.X == 7 && m.Y == 0)) {
+                                    playBoard.canbKingKcastle = false;
+                                }
+                                if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
+                                    playBoard.canbKingQcastle = false;
+                                }
 
 
                                 MapPieces(m);
@@ -239,6 +251,18 @@ bool ChessWindow::Update()
                     }
                     if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
                         playBoard.canbKingKcastle = false;
+                        playBoard.canbKingQcastle = false;
+                    }
+                    if ((m.oX == 7 && m.oY == 7) || (m.X == 7 && m.Y == 7)) {
+                        playBoard.canwKingKcastle = false;
+                    }
+                    if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
+                        playBoard.canwKingQcastle = false;
+                    }
+                    if ((m.oX == 7 && m.oY == 0) || (m.X == 7 && m.Y == 0)) {
+                        playBoard.canbKingKcastle = false;
+                    }
+                    if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
                         playBoard.canbKingQcastle = false;
                     }
                     MapPieces(m);

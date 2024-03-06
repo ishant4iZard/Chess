@@ -44,7 +44,7 @@ class ChessBoard
 private:
     bool turn = 1;
     std::vector<board> history;
-    int Depth = 6;
+    int Depth = 7;
 
     void wPawn(std::vector<move>& moves, int x, int y, board newboard);
     void bPawn(std::vector<move>& moves, int x, int y, board newboard);

@@ -486,9 +486,9 @@ int ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int dept
                 BestMoves.clear();
                 BestMoves.push_back(mymoves);
             }
-            else if (score == maxscore && depth == Depth /*&& score!=-INT_MAX*/) {
-                BestMoves.push_back(mymoves);
-            }
+            //else if (score == maxscore && depth == Depth /*&& score!=-INT_MAX*/) {
+            //    BestMoves.push_back(mymoves);
+            //}
             if (maxscore > alpha) {
                 alpha = maxscore;
             }
@@ -505,8 +505,8 @@ int ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int dept
             *Checkmate = true;
         }
         else {
-            int random = (rand() * rand() % BestMoves.size());
-            RecursionBestMove = BestMoves[random];
+            //int random = (rand() % BestMoves.size());
+            RecursionBestMove = BestMoves[0];
         }
     }
     /*if (noMoveCounter == Movesthisturn.size()) {
@@ -521,6 +521,7 @@ move ChessBoard::NegaMaxRecursionhelper(board newboard, bool newturn, bool* Chec
     move RecursionBestMove(-1, -1, -1, -1);
     int alpha = -INT_MAX;
     int beta = INT_MAX;
+    counter = 0;
     NegaMaxRecursionAlphaBeta (newboard, newturn, Depth, Checkmate,alpha ,beta ,RecursionBestMove);
     //NegaMaxRecursion(newboard, newturn, Depth, Checkmate,RecursionBestMove);
     //MinMax(newboard, newturn, Checkmate);

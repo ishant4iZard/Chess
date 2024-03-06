@@ -2,9 +2,6 @@
   ChessWindow.h
   Compiling...
   ChessWindow.h
-  ChessBoard.cpp
-C:\Users\c3002856\source\repos\Chess\Chess\ChessBoard.cpp(452,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  ChessBoardMoves.cpp
   ChessWindow.cpp
 C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(7,92): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
 C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(7,92): warning C4244:         with
@@ -66,17 +63,17 @@ C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(131,57): warning C424
 C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(131,57): warning C4244:         [
 C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(131,57): warning C4244:             T=float
 C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(131,57): warning C4244:         ]
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(229,30): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(302,34): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(303,36): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(305,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(305,30): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(306,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(306,30): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(241,30): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(326,34): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(327,36): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(329,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(329,30): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(330,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\c3002856\source\repos\Chess\Chess\ChessWindow.cpp(330,30): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Main.cpp
 C:\Users\c3002856\source\repos\Chess\Chess\Main.cpp(22,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Generating code
-  2 of 286 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+  1 of 286 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

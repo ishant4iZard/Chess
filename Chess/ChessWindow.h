@@ -35,7 +35,7 @@ private:
 	
 public:
 
-	bool whiteplayplayer =0, blackplayplayer = 1;
+	bool whiteplayplayer =0, blackplayplayer = 0;
 	ChessWindow(int width, int height, const char* name, const char* imgPath[12]);
 	bool Update();
 	//~ChessWindow();
