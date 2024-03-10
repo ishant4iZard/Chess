@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include <sstream>
 #include <cstring>
+#include <map>
 
 struct move
 {
@@ -33,9 +34,9 @@ struct board
         {8, 6, -1, -1, -1, -1, 0, 2},
         {7, -1, -1, 6, -1, -1, 0, 1}
     };*/
-    int score = 0;
+    float score = 0;
 
-    void updateScore(int a) {
+    void updateScore(float a) {
         score -= a;
     }
 };
@@ -54,12 +55,14 @@ private:
     void Bishop(std::vector<move>& moves, int x, int y, board newboard);
     void Knight(std::vector<move>& moves, int x, int y, board newboard);
 
-    int MinMaxRecursion(board newboard, bool newturn,int depth ,bool* Checkmate,move &RecursionBestMove);
-    int NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove);
-    int NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate,int alpha , int beta, move& RecursionBestMove);
+    float MinMaxRecursion(board newboard, bool newturn,int depth ,bool* Checkmate,move &RecursionBestMove);
+    float NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove);
+    float NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate,float alpha , float beta, move& RecursionBestMove);
     void sortMoves(std::vector<move>& movesThisTurn, board newboard,bool newTurn);
 
 public:
+    ChessBoard();
+
     std::vector<move> getLegalMoves(board b, bool color);
     board currBoard;
     bool playMove(move req);
@@ -79,12 +82,16 @@ public:
         return turn;
     }
 
+    std::map<int, int> pieceScores;
+    std::map<int, std::vector<std::vector<float>>> piecePosScores;
+
+
     move bestMove(board newboard, bool turn, int depth,bool *Checkmate, bool* isMeCheckmate);
     move MinMax(board newboard, bool newturn, bool* Checkmate);
     move MinMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
     move NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
 
-    int score(int i);
+    float score(move m, const board newboard);
     board createnewboard(move m, board& currgoingboard);
 
     void quicksort(std::vector<move>& vec, int L, int R, board newboard, bool newturn);
