@@ -13,27 +13,29 @@ move::move(int oldX, int oldY, int newX, int newY)
 
 std::vector<std::vector<float>> KnightScores =
 {
-    {1,1,1,1,1,1,1,1},
-    {1,2,2,2,2,2,2,1},
-    {1,2,3,3,3,3,2,1},
-    {1,2,3,4,4,3,2,1},
-    {1,2,3,4,4,3,2,1},
-    {1,2,3,3,3,3,2,1},
-    {1,2,2,2,2,2,2,1},
-    {1,1,1,1,1,1,1,1}
+    {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f},
+    {1.0f,2.0f,2.0f,2.0f,2.0f,2.0f,2.0f,1.0f},
+    {1.0f,2.0f,3.0f,3.0f,3.0f,3.0f,2.0f,1.0f},
+    {1.0f,2.0f,3.0f,4.0f,4.0f,3.0f,2.0f,1.0f},
+    {1.0f,2.0f,3.0f,4.0f,4.0f,3.0f,2.0f,1.0f},
+    {1.0f,2.0f,3.0f,3.0f,3.0f,3.0f,2.0f,1.0f},
+    {1.0f,2.0f,2.0f,2.0f,2.0f,2.0f,2.0f,1.0f},
+    {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f}
 };
 
 std::vector<std::vector<float>> BishopScores =
 {
-    {1,1,1,1,1,1,1,1},
-    {1,2,2,2,2,2,2,1},
-    {1,2,3,3,3,3,2,1},
-    {1,2,3,4,4,3,2,1},
-    {1,2,3,4,4,3,2,1},
-    {1,2,3,3,3,3,2,1},
-    {1,2,2,2,2,2,2,1},
-    {1,1,1,1,1,1,1,1}
+    {4.0f,3.0f,2.0f,1.0f,1.0f,2.0f,3.0f,4.0f},
+    {3.0f,4.1f,3.1f,2.1f,2.1f,3.1f,4.1f,3.0f},
+    {2.0f,3.1f,4.2f,3.2f,3.2f,4.2f,3.1f,2.0f},
+    {1.0f,2.1f,3.2f,4.3f,4.3f,3.2f,2.1f,1.0f},
+    {1.0f,2.1f,3.2f,4.3f,4.3f,3.2f,2.1f,1.0f},
+    {2.0f,3.1f,4.2f,3.3f,3.3f,4.2f,3.1f,2.0f},
+    {3.0f,4.1f,3.1f,2.1f,2.1f,3.1f,4.1f,3.0f},
+    {4.0f,3.0f,1.0f,1.0f,1.0f,1.0f,3.0f,4.0f}
 };
+
+
 
 float ChessBoard::score(move m, const board newboard) {
     if (m.X == -1) {
@@ -122,6 +124,14 @@ bool ChessBoard::playMove(move req)
                 currBoard.arr[3][0] = 7;
                 currBoard.arr[0][0] = -1;
             }
+            if (currBoard.arr[req.X][req.Y] == 0 && req.Y == 0) {
+                currBoard.arr[req.X][req.Y] = 5;
+                tempms = -9;
+            }
+            if (currBoard.arr[req.X][req.Y] == 6 && req.Y == 7) {
+                currBoard.arr[req.X][req.Y] = 11;
+                tempms = 9;
+            }
             std::vector<move> tempMoves = getLegalMoves(currBoard, !turn);
             for (int j = 0; j < tempMoves.size(); ++j)
             {
@@ -182,6 +192,12 @@ bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vect
                 newboard.arr[3][0] = 7;
                 newboard.arr[0][0] = -1;
             }
+            if (newboard.arr[req.X][req.Y] == 0 && req.Y == 0) {
+                newboard.arr[req.X][req.Y] = 5;
+            }
+            if (newboard.arr[req.X][req.Y] == 6 && req.Y == 7) {
+                newboard.arr[req.X][req.Y] = 11;
+            }
             std::vector<move> tempMoves = getLegalMoves(newboard, !newturn);
             for (int j = 0; j < tempMoves.size(); ++j)
             {
@@ -227,6 +243,14 @@ board ChessBoard::createnewboard(move m , board& currgoingboard) {
     if (ans.arr[m.X][m.Y] == 10 && m.X - m.oX == 2) {
         ans.arr[3][0] = 7;
         ans.arr[0][0] = -1;
+    }
+    if (ans.arr[m.X][m.Y] == 0 && m.Y == 0) {
+        ans.arr[m.X][m.Y] = 5;
+        tempPoints -= 9;
+    }
+    if (ans.arr[m.X][m.Y] == 6 && m.Y == 7) {
+        ans.arr[m.X][m.Y] = 11;
+        tempPoints += 9;
     }
     ans.updateScore(tempPoints);
     return ans;
@@ -534,6 +558,13 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
     std::vector<move> ForcedMoves;
 
     float score;
+
+    if (Movesthisturn.size() < 30) {
+        Depth = 10;
+    }
+    else {
+        Depth = 7;
+    }
 
     float maxscore = -999;
 

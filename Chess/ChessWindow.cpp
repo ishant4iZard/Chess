@@ -73,6 +73,43 @@ void ChessWindow::MapPieces(move curr)
     }
 }
 
+void ChessWindow::MapPromotion(move curr)
+{
+    ChessPiece* selected = NULL;
+    bool capture = false;
+    for (int i = 0; i < 64; ++i)
+    {
+        if (pieces[i].draw == 1)
+        {
+            if (pieces[i].x == curr.oX && pieces[i].y == curr.oY)
+            {
+                selected = &pieces[i];
+            }
+            if (pieces[i].x == curr.X && pieces[i].y == curr.Y)
+            {
+                pieces[i].draw = 0;
+                //sounds[2].play();
+                capture = true;
+            }
+            pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (pieces[i].x * Holder.width / 8), Holder.top + offsety + (pieces[i].y * Holder.height / 8)));
+            pieces[i].sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+        }
+    }
+    if (selected != NULL) {
+        selected->x = curr.X;
+        selected->y = curr.Y;
+
+        selected->pieceID = playBoard.currBoard.arr[curr.X][curr.Y];
+
+        selected->sprite.setTexture(pieceTex[selected->pieceID]);
+
+        selected->sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (selected->x * Holder.width / 8), Holder.top + offsety + (selected->y * Holder.height / 8)));
+        selected->sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+    }
+}
+
+
+
 ChessWindow::ChessWindow(int width, int height, const char* name, const char* imgPath[12])
 {
     color[0].r = 118;
@@ -201,24 +238,31 @@ bool ChessWindow::Update()
                                     playBoard.canbKingQcastle = false;
                                 }
 
-
-                                MapPieces(m);
+                                if (pieces[m.oX* 8 + m.oY].pieceID == 0 && m.Y == 0) {
+                                    MapPromotion(m);
+                                }
+                                else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
+                                    MapPromotion(m);
+                                }
+                                else {
+                                    MapPieces(m);
 #pragma region Castle
-                                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)  
-                                {
+                                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
+                                    {
                                         MapPieces(move(7, 7, 5, 7));
-                                }
-                                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)  
-                                {
+                                    }
+                                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
+                                    {
                                         MapPieces(move(0, 7, 3, 7));
-                                }
-                                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)  
-                                {
+                                    }
+                                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
+                                    {
                                         MapPieces(move(7, 0, 5, 0));
-                                }
-                                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)  
-                                {
+                                    }
+                                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
+                                    {
                                         MapPieces(move(0, 0, 3, 0));
+                                    }
                                 }
 #pragma endregion
                                 playBoard.nextTurn();
@@ -284,6 +328,7 @@ bool ChessWindow::Update()
                         MapPieces(move(0, 7, 3, 0));
                     }
 #pragma endregion
+                    
                     playBoard.nextTurn();
                 }
                 if (checkmate) {

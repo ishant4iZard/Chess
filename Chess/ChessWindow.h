@@ -26,6 +26,7 @@ private:
 	void MapPieces();
 	void DrawPieces();
 	void MapPieces(move curr);
+	void MapPromotion(move curr);
 
 	int offsetx = 5, offsety = 0;
 
@@ -35,7 +36,7 @@ private:
 	
 public:
 
-	bool whiteplayplayer =0, blackplayplayer = 0;
+	bool whiteplayplayer =1, blackplayplayer = 0;
 	ChessWindow(int width, int height, const char* name, const char* imgPath[12]);
 	bool Update();
 	//~ChessWindow();
