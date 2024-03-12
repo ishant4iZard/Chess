@@ -32,6 +32,7 @@ private:
 
 
 	bool gameover;
+	bool Stalemate;
 	//bool startgame = false;
 	
 public:

@@ -24,14 +24,14 @@ struct board
         {7, 6, -1, -1, -1, -1, 0, 1} 
     };*/
     int arr[8][8] = {
-        {-1, -1, -1, 4, -1, -1, -1, -1},
-        {10, -1, -1, -1, -1, -1, -1, -1},
+        {7, -1, -1, -1, -1, -1, 6, -1},
+        {-1, 9, -1, 6, -1, -1, -1, -1},
+        {-1, -1, -1, -1, -1, -1, -1, 4},
+        {-1, -1, -1, 6, -1, -1, -1, -1},
+        {-1, -1, -1, 10, 11, -1, -1, -1},
+        {-1, -1, -1, -1, -1, 11, -1, -1},
         {-1, -1, -1, -1, -1, -1, -1, -1},
-        {-1,-1, -1, -1, -1, -1, -1, -1},
-        {-1, -1, -1, -1, -1, -1, -1, -1},
-        {-1, -1, -1, -1, -1, -1, -1, -1},
-        {-1, -1, -1, -1, -1, -1, -1, -1},
-        {-1, 0, -1, -1, -1, -1, -1, -1}
+        {-1, -1, -1, -1, -1, -1, -1, -1}
     };
     float score = 0;
 
@@ -56,7 +56,8 @@ private:
 
     float MinMaxRecursion(board newboard, bool newturn,int depth ,bool* Checkmate,move &RecursionBestMove);
     float NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove);
-    float NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate,float alpha , float beta, move& RecursionBestMove);
+    float NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate, bool* Stalemate,float alpha , float beta, move& RecursionBestMove);
+    float NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn, int depth, bool* Checkmate, bool* Stalemate,float alpha, float beta, move& RecursionBestMove);
     void sortMoves(std::vector<move>& movesThisTurn, board newboard,bool newTurn);
 
 public:
@@ -84,11 +85,12 @@ public:
     std::map<int, int> pieceScores;
     std::map<int, std::vector<std::vector<float>>> piecePosScores;
 
+    bool isInCheck(board newboard, bool newTurn);
 
     move bestMove(board newboard, bool turn, int depth,bool *Checkmate, bool* isMeCheckmate);
     move MinMax(board newboard, bool newturn, bool* Checkmate);
     move MinMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
-    move NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
+    move NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate, bool* Stalemate , int depth = 7);
 
     float score(move m, const board newboard);
     board createnewboard(move m, board& currgoingboard);

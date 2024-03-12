@@ -210,10 +210,12 @@ bool ChessWindow::Update()
                     else
                     {
                         bool checkmate = false;
-                        bool isMeCheckmate = false;
+                        bool stalemate = false;
 
                         move m(selected[0], selected[1], projX, projY);
-                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &isMeCheckmate);
+                        //move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &isMeCheckmate);
+                        move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
+
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
                             if (playBoard.playMove(m))
                             {
@@ -272,6 +274,10 @@ bool ChessWindow::Update()
                         {
                             gameover = true;
                         }
+                        if (stalemate) {
+                            Stalemate = true;
+                            gameover = true;
+                        }
                         isSelected = 0;
                     }
                 }
@@ -281,10 +287,11 @@ bool ChessWindow::Update()
                 std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
 
                 bool checkmate = false;
+                bool stalemate = false;
                 bool isMeCheckmate = false;
                 int numMoves = AImoves.size();
                 //move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
-                move m = playBoard.NegaMaxRecursionhelper (playBoard.currBoard, playBoard.getTurn(), &checkmate);
+                move m = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate);
                 //move m = playBoard.MinMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate);
 
                 if (playBoard.playMove(m))
@@ -309,29 +316,40 @@ bool ChessWindow::Update()
                     if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
                         playBoard.canbKingQcastle = false;
                     }
-                    MapPieces(m);
+                    if (pieces[m.oX * 8 + m.oY].pieceID == 0 && m.Y == 0) {
+                        MapPromotion(m);
+                    }
+                    else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
+                        MapPromotion(m);
+                    }
+                    else {
+                        MapPieces(m);
 #pragma region Castle
-                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
-                    {
-                        MapPieces(move(7, 7, 5, 7));
-                    }
-                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
-                    {
-                        MapPieces(move(0, 7, 3, 7));
-                    }
-                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
-                    {
-                        MapPieces(move(7, 0, 5, 0));
-                    }
-                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
-                    {
-                        MapPieces(move(0, 7, 3, 0));
-                    }
+                        if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
+                        {
+                            MapPieces(move(7, 7, 5, 7));
+                        }
+                        if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
+                        {
+                            MapPieces(move(0, 7, 3, 7));
+                        }
+                        if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
+                        {
+                            MapPieces(move(7, 0, 5, 0));
+                        }
+                        if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
+                        {
+                            MapPieces(move(0, 7, 3, 0));
+                        }
 #pragma endregion
-                    
+                    }
                     playBoard.nextTurn();
                 }
                 if (checkmate) {
+                    gameover = true;
+                }
+                if (stalemate) {
+                    Stalemate = true;
                     gameover = true;
                 }
             }
@@ -362,7 +380,23 @@ bool ChessWindow::Update()
     window.clear();
     DrawSquares();
     DrawPieces();
-    if (gameover) {
+    if (Stalemate && gameover) {
+        //std::string a = (playBoard.getTurn() == 0 ? "white" : "black");
+        text.setString("Draw by Stalemate!!");
+        text2.setString("Press 'Esc' to close");
+        text.setFont(font);
+        text2.setFont(font);
+        text.setCharacterSize(0.1 * X);
+        text2.setCharacterSize(0.04 * X);
+
+        text.setPosition(0.24 * X, 0.425 * Y);
+        text2.setPosition(0.3 * X, 0.625 * Y);
+        text.setFillColor(sf::Color::Red);
+        text2.setFillColor(sf::Color::Blue);
+        window.draw(text);
+        window.draw(text2);
+    }
+    if (gameover && !Stalemate) {
         std::string a = (playBoard.getTurn() == 0 ? "white" : "black");
         text.setString(a + " wins!!");
         text2.setString("Press 'Esc' to close");

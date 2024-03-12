@@ -1,7 +1,10 @@
 #include <vector>
-#include "chessBoard.h"
-#include<thread>
+#include <thread>
 #include <iostream>
+#include <functional>
+#include <mutex>
+#include "chessBoard.h"
+
 
 move::move(int oldX, int oldY, int newX, int newY)
 {
@@ -10,6 +13,12 @@ move::move(int oldX, int oldY, int newX, int newY)
     X = newX;
     Y = newY;
 }
+
+
+
+#pragma region positionScores
+
+
 
 std::vector<std::vector<float>> KnightScores =
 {
@@ -35,7 +44,33 @@ std::vector<std::vector<float>> BishopScores =
     {4.0f,3.0f,1.0f,1.0f,1.0f,1.0f,3.0f,4.0f}
 };
 
+std::vector<std::vector<float>> WhitePawnScores =
+{
+    {10.0f,8.0f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
+    {10.0f,8.1f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
+    {10.0f,8.1f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
+    {10.0f,8.1f,4.5f,4.5f,4.2f,2.0f,0.0f,0.0f},
+    {10.0f,8.1f,4.5f,4.5f,4.2f,2.0f,0.0f,0.0f},
+    {10.0f,8.1f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
+    {10.0f,8.1f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
+    {10.0f,8.0f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f}
+};
 
+std::vector<std::vector<float>> BlackPawnScores =
+{
+    {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.0f,10.0f},
+    {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.1f,10.0f},
+    {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.1f,10.0f},
+    {0.0f,0.0f,2.0f,4.2f,4.5f,4.5f,8.1f,10.0f},
+    {0.0f,0.0f,2.0f,4.2f,4.5f,4.5f,8.1f,10.0f},
+    {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.1f,10.0f},
+    {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.1f,10.0f},
+    {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.0f,10.0f}
+};
+
+
+
+#pragma endregion
 
 float ChessBoard::score(move m, const board newboard) {
     if (m.X == -1) {
@@ -78,16 +113,16 @@ ChessBoard::ChessBoard()
     pieceScores[-1] = 0;
 
     //piecePosScores[0] = KnightScores;
-    piecePosScores[0] = KnightScores;
+    piecePosScores[0] = WhitePawnScores;
     piecePosScores[1] = KnightScores;
     piecePosScores[2] = KnightScores;
-    piecePosScores[3] = KnightScores;
+    piecePosScores[3] = BishopScores;
     piecePosScores[4] = KnightScores;
     piecePosScores[5] = KnightScores;
-    piecePosScores[6] = KnightScores;
+    piecePosScores[6] = BlackPawnScores;
     piecePosScores[7] = KnightScores;
     piecePosScores[8] = KnightScores;
-    piecePosScores[9] = KnightScores;
+    piecePosScores[9] = BishopScores;
     piecePosScores[10] = KnightScores;
     piecePosScores[11] = KnightScores;
     piecePosScores[-1] = KnightScores;
@@ -132,18 +167,10 @@ bool ChessBoard::playMove(move req)
                 currBoard.arr[req.X][req.Y] = 11;
                 tempms = 9;
             }
-            std::vector<move> tempMoves = getLegalMoves(currBoard, !turn);
-            for (int j = 0; j < tempMoves.size(); ++j)
-            {
-                if (currBoard.arr[tempMoves[j].X][tempMoves[j].Y] == 4  || currBoard.arr[tempMoves[j].X][tempMoves[j].Y] == 10)
-                {
-                    currBoard = history[history.size() - 1];
-                    check = true;
-                    break;
-                }
-            }
+            if(isInCheck(currBoard,turn))
+                currBoard = history[history.size() - 1];
 
-            if (!check)
+            else
             {
                 /*if (currBoard.arr[req.X][req.Y] == 4) {
                     canwKingKcastle = false;
@@ -198,20 +225,11 @@ bool ChessBoard::playMoveAI(move req , board newboard , bool newturn , std::vect
             if (newboard.arr[req.X][req.Y] == 6 && req.Y == 7) {
                 newboard.arr[req.X][req.Y] = 11;
             }
-            std::vector<move> tempMoves = getLegalMoves(newboard, !newturn);
-            for (int j = 0; j < tempMoves.size(); ++j)
-            {
-                if (newboard.arr[tempMoves[j].X][tempMoves[j].Y] == 4 || newboard.arr[tempMoves[j].X][tempMoves[j].Y] == 10)
-                {
-                    check = true;
-                    newboard.arr[req.oX][req.oY] = newboard.arr[req.X][req.Y];
-                    newboard.arr[req.X][req.Y] = tempm;
-                        
-                    break;
-                }
+            if (isInCheck(newboard, newturn)) {
+                newboard.arr[req.oX][req.oY] = newboard.arr[req.X][req.Y];
+                newboard.arr[req.X][req.Y] = tempm;
             }
-            if (!check)
-            {
+            else{
                 newboard.arr[req.oX][req.oY] = newboard.arr[req.X][req.Y];
                 newboard.arr[req.X][req.Y] = tempm;
                 return true;
@@ -254,6 +272,24 @@ board ChessBoard::createnewboard(move m , board& currgoingboard) {
     }
     ans.updateScore(tempPoints);
     return ans;
+}
+
+bool ChessBoard::isInCheck(board newboard, bool newTurn)
+{
+    bool check = false;
+    std::vector<move> tempMoves = getLegalMoves(newboard, !newTurn);
+    for (int j = 0; j < tempMoves.size(); ++j)
+    {
+        if (newboard.arr[tempMoves[j].X][tempMoves[j].Y] == 4 || newboard.arr[tempMoves[j].X][tempMoves[j].Y] == 10)
+        {
+            check = true;
+            /*newboard.arr[req.oX][req.oY] = newboard.arr[req.X][req.Y];
+            newboard.arr[req.X][req.Y] = tempm;*/
+
+            break;
+        }
+    }
+    return check;
 }
 
 move ChessBoard::bestMove(board newboard,bool newturn, int depth,bool* Checkmate , bool* isMeCheckmate) {
@@ -547,7 +583,7 @@ void ChessBoard::sortMoves(std::vector<move>& movesThisTurn, board newboard, boo
 
 
 
-float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate, float alpha, float beta, move& RecursionBestMove) {
+float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate,bool* Stalemate ,float alpha, float beta, move& RecursionBestMove) {
     int turnMultiplier = newturn ? 1 : -1;
     if (depth >= Depth) {
         return turnMultiplier * newboard.score;
@@ -555,9 +591,9 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
     std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
 
     std::vector<move> BestMoves;
-    std::vector<move> ForcedMoves;
 
     float score;
+    int invalidMovesCounter = 0;
 
     if (Movesthisturn.size() < 30) {
         Depth = 10;
@@ -575,12 +611,11 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
             counter++;
             board myBoard = createnewboard(mymoves, newboard);
             bool checkmate = false;
-            score = -NegaMaxRecursionAlphaBeta(myBoard, !newturn, depth + 1, &checkmate, -beta, -alpha, RecursionBestMove);
-            /*if (checkmate) {
-                if (depth == Depth)
-                    RecursionBestMove = mymoves;
-                return 999;
-            }*/
+            bool stalemate = false;
+            score = -NegaMaxRecursionAlphaBeta(myBoard, !newturn, depth + 1, &checkmate,&stalemate ,-beta, -alpha, RecursionBestMove);
+            if (stalemate == true) {
+                score = -999;
+            }
             if (score > maxscore) {
                 maxscore = score;
                 BestMoves.clear();
@@ -596,6 +631,13 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
                 break;
             }
         }
+        else {
+            invalidMovesCounter++;
+        }
+    }
+    if (invalidMovesCounter == Movesthisturn.size() && !isInCheck(newboard, newturn)) {
+        *Stalemate = true;
+        return 0;
     }
     if (depth == 0) {
         if (BestMoves.size() == 0) {
@@ -606,26 +648,120 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
             RecursionBestMove = BestMoves[random];
         }
     }
-    /*if (noMoveCounter == Movesthisturn.size()) {
-        *Checkmate = true;
-    }*/
     return maxscore;
 }
 
 
-move ChessBoard::NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate)
+float ChessBoard::NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn, int depth, bool* Checkmate,bool* Stalemate ,float alpha, float beta, move& RecursionBestMove) {
+    int turnMultiplier = newturn ? 1 : -1;
+    if (depth >= Depth) {
+        return turnMultiplier * newboard.score;
+    }
+
+    std::vector<move> Movesthisturn = getLegalMoves(newboard, newturn);
+    float maxscore = -999;
+    std::vector<move> BestMoves;
+
+    int invalidMovesCounter = 0;
+
+    // Adjust depth dynamically
+    /*if (Movesthisturn.size() < 30) {
+        Depth = 10;
+    }
+    else {
+        Depth = 7;
+    }*/
+
+    sortMoves(Movesthisturn, newboard, newturn);
+
+    std::vector<std::thread> threads;
+    std::vector<float> scores(Movesthisturn.size());
+
+
+    for (size_t i = 0; i < Movesthisturn.size(); ++i) {
+        threads.emplace_back([&, i]() {
+            float score;
+            move mymoves = Movesthisturn[i];
+            if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
+                counter++;
+                board myBoard = createnewboard(mymoves, newboard);
+                bool checkmate = false;
+                bool stalemate = false;
+                score = -NegaMaxRecursionAlphaBeta(myBoard, !newturn, depth + 1, &checkmate, &stalemate, -beta, -alpha, RecursionBestMove);
+
+                if (stalemate == true) {
+                    score = -999;
+                }
+            }
+            else {
+                score = -999; // Invalid move, give it a low score
+                invalidMovesCounter++;
+            }
+            scores[i] = score;
+        });
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    if (invalidMovesCounter == Movesthisturn.size() && Depth - 1 == depth && !isInCheck(newboard,newturn)) {
+        *Stalemate = true;
+        return 0;
+    }
+
+    for (size_t i = 0; i < Movesthisturn.size(); ++i) {
+        float score = scores[i];
+        if (score > maxscore) {
+            maxscore = score;
+            BestMoves.clear();
+            BestMoves.push_back(Movesthisturn[i]);
+        }
+        else if (score == maxscore && depth == 0) {
+            BestMoves.push_back(Movesthisturn[i]);
+        }
+        if (maxscore > alpha) {
+            if (maxscore > 999) {
+                if(depth == Depth)
+                    RecursionBestMove = Movesthisturn[i];
+
+                return maxscore;
+            }
+            alpha = maxscore;
+        }
+        if (alpha >= beta) {
+            break;
+        }
+    }
+
+    if (depth == 0) {
+        if (BestMoves.size() == 0) {
+            *Checkmate = true;
+        }
+        else {
+            int random = (rand() % BestMoves.size());
+            RecursionBestMove = BestMoves[random];
+        }
+    }
+
+    return maxscore;
+}
+
+move ChessBoard::NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate, bool *Stalemate, int depth)
 {
+    Depth = depth;
     move RecursionBestMove(-1, -1, -1, -1);
     float alpha = -999;
     float beta = 999;
     counter = 0;
-    NegaMaxRecursionAlphaBeta (newboard, newturn, 0, Checkmate,alpha ,beta ,RecursionBestMove);
+    //bool staleMate = false;
+    NegaMaxRecursionAlphaBeta (newboard, newturn, 0, Checkmate, Stalemate, alpha ,beta ,RecursionBestMove);
     //NegaMaxRecursion(newboard, newturn, Depth, Checkmate,RecursionBestMove);
     //MinMax(newboard, newturn, Checkmate);
     //MinMaxRecursion(newboard, newturn, Depth, Checkmate, RecursionBestMove);
 
 
-    //std::cout << counter<<"\n";
+    std::cout << "\n" << counter<<"\n";
     return RecursionBestMove;
 }
 
