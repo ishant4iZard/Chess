@@ -729,9 +729,9 @@ float ChessBoard::NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn,
             }
             alpha = maxscore;
         }
-        if (alpha >= beta) {
+        /*if (alpha >= beta) {
             break;
-        }
+        }*/
     }
 
     if (depth == 0) {
@@ -755,7 +755,7 @@ move ChessBoard::NegaMaxRecursionhelper(board newboard, bool newturn, bool* Chec
     float beta = 999;
     counter = 0;
     //bool staleMate = false;
-    NegaMaxRecursionAlphaBeta (newboard, newturn, 0, Checkmate, Stalemate, alpha ,beta ,RecursionBestMove);
+    NegaMaxRecursionAlphaBetaThreads(newboard, newturn, 0, Checkmate, Stalemate, alpha ,beta ,RecursionBestMove);
     //NegaMaxRecursion(newboard, newturn, Depth, Checkmate,RecursionBestMove);
     //MinMax(newboard, newturn, Checkmate);
     //MinMaxRecursion(newboard, newturn, Depth, Checkmate, RecursionBestMove);

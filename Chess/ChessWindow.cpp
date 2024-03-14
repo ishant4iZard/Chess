@@ -213,8 +213,8 @@ bool ChessWindow::Update()
                         bool stalemate = false;
 
                         move m(selected[0], selected[1], projX, projY);
-                        //move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &isMeCheckmate);
-                        move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
+                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &stalemate);
+                        //move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
 
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
                             if (playBoard.playMove(m))
