@@ -213,12 +213,14 @@ bool ChessWindow::Update()
                         bool stalemate = false;
 
                         move m(selected[0], selected[1], projX, projY);
-                        move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &stalemate);
-                        //move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
+                        //move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &stalemate);
+                        move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
 
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
                             if (playBoard.playMove(m))
                             {
+#pragma region CastleRights
+
                                 if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
                                     playBoard.canwKingKcastle = false;
                                     playBoard.canwKingQcastle = false;
@@ -239,7 +241,7 @@ bool ChessWindow::Update()
                                 if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
                                     playBoard.canbKingQcastle = false;
                                 }
-
+#pragma endregion
                                 if (pieces[m.oX* 8 + m.oY].pieceID == 0 && m.Y == 0) {
                                     MapPromotion(m);
                                 }
@@ -282,84 +284,11 @@ bool ChessWindow::Update()
                     }
                 }
             }
-            if (event.mouseButton.button == sf::Mouse::Button::Left && ((!whiteplayplayer && playBoard.getTurn()) || (!blackplayplayer && !playBoard.getTurn()))) {
-                //std::cout << "What What\n";
-                std::vector<move> AImoves = playBoard.getLegalMoves(playBoard.currBoard, playBoard.getTurn());
-
-                bool checkmate = false;
-                bool stalemate = false;
-                bool isMeCheckmate = false;
-                int numMoves = AImoves.size();
-                //move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
-                move m = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate);
-                //move m = playBoard.MinMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate);
-
-                if (playBoard.playMove(m))
-                {
-                    if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
-                        playBoard.canwKingKcastle = false;
-                        playBoard.canwKingQcastle = false;
-                    }
-                    if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
-                        playBoard.canbKingKcastle = false;
-                        playBoard.canbKingQcastle = false;
-                    }
-                    if ((m.oX == 7 && m.oY == 7) || (m.X == 7 && m.Y == 7)) {
-                        playBoard.canwKingKcastle = false;
-                    }
-                    if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
-                        playBoard.canwKingQcastle = false;
-                    }
-                    if ((m.oX == 7 && m.oY == 0) || (m.X == 7 && m.Y == 0)) {
-                        playBoard.canbKingKcastle = false;
-                    }
-                    if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
-                        playBoard.canbKingQcastle = false;
-                    }
-                    if (pieces[m.oX * 8 + m.oY].pieceID == 0 && m.Y == 0) {
-                        MapPromotion(m);
-                    }
-                    else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
-                        MapPromotion(m);
-                    }
-                    else {
-                        MapPieces(m);
-#pragma region Castle
-                        if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
-                        {
-                            MapPieces(move(7, 7, 5, 7));
-                        }
-                        if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
-                        {
-                            MapPieces(move(0, 7, 3, 7));
-                        }
-                        if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
-                        {
-                            MapPieces(move(7, 0, 5, 0));
-                        }
-                        if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
-                        {
-                            MapPieces(move(0, 7, 3, 0));
-                        }
-#pragma endregion
-                    }
-                    playBoard.nextTurn();
-                }
-                if (checkmate) {
-                    gameover = true;
-                }
-                if (stalemate) {
-                    Stalemate = true;
-                    gameover = true;
-                }
-            }
+            
             else if (event.mouseButton.button == sf::Mouse::Button::Right)
             {
                 isSelected = 0;
             }
-            
-
-            //std::cout << playBoard.currBoard.score; 
 
             break;
         case sf::Event::Closed:
@@ -413,5 +342,76 @@ bool ChessWindow::Update()
         window.draw(text2);
     }
     window.display();
+
+    if (((!whiteplayplayer && playBoard.getTurn()) || (!blackplayplayer && !playBoard.getTurn()))) {
+
+        bool checkmate = false;
+        bool stalemate = false;
+        move m = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate);
+        //move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
+        //move m = playBoard.MinMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate);
+
+        if (playBoard.playMove(m))
+        {
+#pragma region CastleRights
+            if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
+                playBoard.canwKingKcastle = false;
+                playBoard.canwKingQcastle = false;
+            }
+            if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
+                playBoard.canbKingKcastle = false;
+                playBoard.canbKingQcastle = false;
+            }
+            if ((m.oX == 7 && m.oY == 7) || (m.X == 7 && m.Y == 7)) {
+                playBoard.canwKingKcastle = false;
+            }
+            if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
+                playBoard.canwKingQcastle = false;
+            }
+            if ((m.oX == 7 && m.oY == 0) || (m.X == 7 && m.Y == 0)) {
+                playBoard.canbKingKcastle = false;
+            }
+            if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
+                playBoard.canbKingQcastle = false;
+            }
+#pragma endregion
+            if (pieces[m.oX * 8 + m.oY].pieceID == 0 && m.Y == 0) {
+                MapPromotion(m);
+            }
+            else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
+                MapPromotion(m);
+            }
+            else {
+                MapPieces(m);
+#pragma region Castle
+                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
+                {
+                    MapPieces(move(7, 7, 5, 7));
+                }
+                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
+                {
+                    MapPieces(move(0, 7, 3, 7));
+                }
+                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
+                {
+                    MapPieces(move(7, 0, 5, 0));
+                }
+                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
+                {
+                    MapPieces(move(0, 7, 3, 0));
+                }
+#pragma endregion
+            }
+            playBoard.nextTurn();
+        }
+        if (checkmate) {
+            gameover = true;
+        }
+        if (stalemate) {
+            Stalemate = true;
+            gameover = true;
+        }
+    }
+    
     return true;
 }

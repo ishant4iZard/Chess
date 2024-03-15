@@ -5,14 +5,14 @@
         {
             "primary-output": "x64\\Release\\ChessWindow.h.obj",
             "outputs": [
-                "C:\\Users\\c3002856\\source\\repos\\Chess\\Chess\\x64\\Release\\vc143.pdb",
+                "C:\\Users\\ishan\\source\\repos\\Chess\\Chess\\x64\\Release\\vc143.pdb",
                 "x64\\Release\\",
-                "C:\\Users\\c3002856\\source\\repos\\Chess\\Chess\\x64\\Release\\ChessWindow.h.ifc"
+                "C:\\Users\\ishan\\source\\repos\\Chess\\Chess\\x64\\Release\\ChessWindow.h.ifc"
             ],
             "provides": [
                 {
                     "logical-name": "ChessWindow.h",
-                    "source-path": "c:\\users\\c3002856\\source\\repos\\chess\\chess\\chesswindow.h",
+                    "source-path": "c:\\users\\ishan\\source\\repos\\chess\\chess\\chesswindow.h",
                     "lookup-method": "absolute"
                 }
             ],

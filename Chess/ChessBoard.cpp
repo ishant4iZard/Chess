@@ -595,12 +595,12 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
     float score;
     int invalidMovesCounter = 0;
 
-    if (Movesthisturn.size() < 30) {
+    /*if (Movesthisturn.size() < 30) {
         Depth = 10;
     }
     else {
         Depth = 7;
-    }
+    }*/
 
     float maxscore = -999;
 
