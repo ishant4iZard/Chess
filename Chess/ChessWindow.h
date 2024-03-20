@@ -4,6 +4,13 @@
 #include "ChessPiece.h"
 #include "ChessBoard.h"
 
+enum GameState {
+	none,
+	initial,
+	humanVsAi,
+	startGame
+};
+
 class ChessWindow
 {
 private:
@@ -15,6 +22,7 @@ private:
 	sf::Font font;
 	sf::Text text;
 	sf::Text text2;
+	sf::Text text3;
 	ChessPiece pieces[64];
 	ChessBoard playBoard;
 	int selected[2];
@@ -30,15 +38,17 @@ private:
 
 	int offsetx = 5, offsety = 0;
 
-
-	bool gameover;
-	bool Stalemate;
-	//bool startgame = false;
+	bool gameover, Stalemate;
 	
 public:
 
 	bool whiteplayplayer =1, blackplayplayer = 0;
 	ChessWindow(int width, int height, const char* name, const char* imgPath[12]);
 	bool Update();
+
+	bool GameUpdate();
+	bool StartUpdate();
+
+	GameState gamestate = GameState::initial;
 	//~ChessWindow();
 };

@@ -155,8 +155,7 @@ ChessWindow::ChessWindow(int width, int height, const char* name, const char* im
     window.create(sf::VideoMode(width, height), name);
 }
 
-bool ChessWindow::Update()
-{
+bool ChessWindow::GameUpdate() {
     sf::Event event;
     while (window.pollEvent(event))
     {
@@ -214,7 +213,7 @@ bool ChessWindow::Update()
 
                         move m(selected[0], selected[1], projX, projY);
                         //move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &stalemate);
-                        move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
+                        move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate, 2);
 
                         if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
                             if (playBoard.playMove(m))
@@ -229,7 +228,7 @@ bool ChessWindow::Update()
                                     playBoard.canbKingKcastle = false;
                                     playBoard.canbKingQcastle = false;
                                 }
-                                if ((m.oX == 7&& m.oY == 7)|| (m.X == 7 && m.Y == 7)) {
+                                if ((m.oX == 7 && m.oY == 7) || (m.X == 7 && m.Y == 7)) {
                                     playBoard.canwKingKcastle = false;
                                 }
                                 if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
@@ -242,7 +241,7 @@ bool ChessWindow::Update()
                                     playBoard.canbKingQcastle = false;
                                 }
 #pragma endregion
-                                if (pieces[m.oX* 8 + m.oY].pieceID == 0 && m.Y == 0) {
+                                if (pieces[m.oX * 8 + m.oY].pieceID == 0 && m.Y == 0) {
                                     MapPromotion(m);
                                 }
                                 else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
@@ -284,7 +283,7 @@ bool ChessWindow::Update()
                     }
                 }
             }
-            
+
             else if (event.mouseButton.button == sf::Mouse::Button::Right)
             {
                 isSelected = 0;
@@ -304,7 +303,7 @@ bool ChessWindow::Update()
         }
 
     }
-    
+
 
     window.clear();
     DrawSquares();
@@ -331,11 +330,11 @@ bool ChessWindow::Update()
         text2.setString("Press 'Esc' to close");
         text.setFont(font);
         text2.setFont(font);
-        text.setCharacterSize(0.1*X);
-        text2.setCharacterSize(0.04*X);
+        text.setCharacterSize(0.1 * X);
+        text2.setCharacterSize(0.04 * X);
 
-        text.setPosition(0.24*X, 0.425*Y);
-        text2.setPosition(0.3*X, 0.625*Y);
+        text.setPosition(0.24 * X, 0.425 * Y);
+        text2.setPosition(0.3 * X, 0.625 * Y);
         text.setFillColor(sf::Color::Red);
         text2.setFillColor(sf::Color::Blue);
         window.draw(text);
@@ -412,6 +411,141 @@ bool ChessWindow::Update()
             gameover = true;
         }
     }
-    
+
     return true;
+}
+
+bool ChessWindow::StartUpdate() {
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+        switch (event.type)
+        {
+        case sf::Event::Resized:
+            X = window.getSize().x;
+            Y = window.getSize().y;
+            window.setView(sf::View(sf::FloatRect(0, 0, X, Y)));
+            if (X > Y)
+            {
+                Holder.width = Y;
+                Holder.height = Y;
+                Holder.left = X / 2 - Holder.width / 2;
+                Holder.top = 0;
+            }
+            else
+            {
+                Holder.width = X;
+                Holder.height = X;
+                Holder.top = Y / 2 - Holder.height / 2;
+                Holder.left = 0;
+            }
+            MapPieces();
+            FitToHolder();
+            break;
+        case sf::Event::KeyPressed:
+            if (event.key.code == sf::Keyboard::Escape) {
+                window.close();
+                return false;
+                break;
+            }
+            if (event.key.code == sf::Keyboard::Num1) {
+                if (gamestate == GameState::initial) {
+                    whiteplayplayer = 1;
+                    blackplayplayer = 1;
+                    gamestate = GameState::startGame;
+                }
+                if (gamestate == GameState::humanVsAi) {
+                    whiteplayplayer = 1;
+                    blackplayplayer = 0;
+                    gamestate = GameState::startGame;
+                }
+            }
+            if (event.key.code == sf::Keyboard::Num2) {
+                if (gamestate == GameState::initial) {
+                    gamestate = GameState::humanVsAi;
+                }
+            }
+            if (event.key.code == sf::Keyboard::Num3) {
+                if (gamestate == GameState::initial) {
+                    whiteplayplayer = 0;
+                    blackplayplayer = 0;
+                    gamestate = GameState::startGame;
+                }
+                if (gamestate == GameState::humanVsAi) {
+                    whiteplayplayer = 0;
+                    blackplayplayer = 1;
+                    gamestate = GameState::startGame;
+                }
+            }
+
+            break;
+        }
+    }
+    window.clear();
+    DrawSquares();
+    DrawPieces();
+    switch (gamestate)
+    {
+    case none:
+        break;
+    case initial:
+        text.setString("Press NUM1 to Start Human Vs Human");
+        text2.setString("Press NUM2 to Start Human Vs AI");
+        text3.setString("Press NUM3 to Start AI Vs AI");
+        text.setFont(font);
+        text2.setFont(font);
+        text3.setFont(font);
+        text.setCharacterSize (0.05 * X);
+        text2.setCharacterSize(0.05 * X);
+        text3.setCharacterSize(0.05 * X);
+
+        text.setPosition (0.06 * X, 0.3 * Y);
+        text2.setPosition(0.12 * X, 0.45 * Y);
+        text3.setPosition(0.18 * X, 0.6 * Y);
+        text.setFillColor (sf::Color::Red);
+        text2.setFillColor(sf::Color::Red);
+        text3.setFillColor(sf::Color::Red);
+        window.draw(text);
+        window.draw(text2);
+        window.draw(text3);
+        break;
+    case humanVsAi:
+        text.setString ("Press NUM1 to Start Human as White");
+        text2.setString("Press NUM3 to Start Human as Black");
+        //text3.setString("Press NUM3 to Start AI Vs AI");
+        text.setFont(font);
+        text2.setFont(font);
+        //text3.setFont(font);
+        text.setCharacterSize(0.05 * X);
+        text2.setCharacterSize(0.05 * X);
+        //text3.setCharacterSize(0.05 * X);
+
+        text.setPosition(0.07 * X, 0.4 * Y);
+        text2.setPosition(0.07 * X, 0.55 * Y);
+        //text3.setPosition(0.18 * X, 0.6 * Y);
+        text.setFillColor(sf::Color::Red);
+        text2.setFillColor(sf::Color::Red);
+        text3.setFillColor(sf::Color::Red);
+        window.draw(text);
+        window.draw(text2);
+        //window.draw(text3);
+        break;
+    case startGame:
+        break;
+    default:
+        break;
+    }
+    window.display();
+
+    return true;
+}
+
+bool ChessWindow::Update()
+{
+    if (gamestate != GameState::startGame) {
+        return StartUpdate();
+    }
+    else{
+        return GameUpdate();
+    }
 }

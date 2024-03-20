@@ -592,7 +592,7 @@ float ChessBoard::NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int de
 
     std::vector<move> BestMoves;
 
-    float score;
+    float score = -999;
     int invalidMovesCounter = 0;
 
     /*if (Movesthisturn.size() < 30) {
@@ -680,7 +680,7 @@ float ChessBoard::NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn,
 
     for (size_t i = 0; i < Movesthisturn.size(); ++i) {
         threads.emplace_back([&, i]() {
-            float score;
+            float score = -999;
             move mymoves = Movesthisturn[i];
             if (playMoveAI(mymoves, newboard, newturn, Movesthisturn)) {
                 counter++;
@@ -705,8 +705,12 @@ float ChessBoard::NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn,
         t.join();
     }
 
-    if (invalidMovesCounter == Movesthisturn.size() && Depth - 1 == depth && !isInCheck(newboard,newturn)) {
+    if (invalidMovesCounter == Movesthisturn.size() && depth == 1 && !isInCheck(newboard,newturn)) {
         *Stalemate = true;
+        return 0;
+    }
+    if (invalidMovesCounter == Movesthisturn.size() && depth == 0 && isInCheck(newboard, newturn)) {
+        *Checkmate = true;
         return 0;
     }
 
@@ -735,13 +739,8 @@ float ChessBoard::NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn,
     }
 
     if (depth == 0) {
-        if (BestMoves.size() == 0) {
-            *Checkmate = true;
-        }
-        else {
-            int random = (rand() % BestMoves.size());
-            RecursionBestMove = BestMoves[random];
-        }
+        int random = (rand() % BestMoves.size());
+        RecursionBestMove = BestMoves[random];
     }
 
     return maxscore;
@@ -764,6 +763,8 @@ move ChessBoard::NegaMaxRecursionhelper(board newboard, bool newturn, bool* Chec
     std::cout << "\n" << counter<<"\n";
     return RecursionBestMove;
 }
+
+
 
 bool ChessBoard::nextTurn()
 {

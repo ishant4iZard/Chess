@@ -73,6 +73,10 @@ public:
     bool canbKingKcastle = true;
     bool canbKingQcastle = true;
 
+    void setDepth(int indepth) {
+        Depth = indepth;
+    }
+
     sf::Text text;
     std::vector<move> moves;
 
