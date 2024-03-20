@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChessAI.cpp" />
     <ClCompile Include="ChessBoard.cpp" />
     <ClCompile Include="ChessBoardMoves.cpp" />
     <ClCompile Include="ChessWindow.cpp" />
@@ -148,8 +149,10 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChessAI.h" />
     <ClInclude Include="ChessBoard.h" />
     <ClInclude Include="ChessPiece.h" />
+    <ClInclude Include="piecePositionScores.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />

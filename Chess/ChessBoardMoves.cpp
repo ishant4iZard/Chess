@@ -182,7 +182,6 @@ void ChessBoard::Queen(std::vector<move>& moves, int x, int y, board newboard)
 }
 
 
-
 std::vector<move> ChessBoard::getLegalMoves(board b, bool color)
 {
     std::vector<move> moves;

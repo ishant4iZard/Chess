@@ -1,6 +1,22 @@
 #include "ChessWindow.h"
 #include<iostream>
 
+void ChessWindow::SetPiecePositionAndScale(ChessPiece& piece) {
+    piece.sprite.setPosition(sf::Vector2f(
+        Holder.left + offsetx + (piece.x * Holder.width / 8),
+        Holder.top + offsety + (piece.y * Holder.height / 8)
+    ));
+    piece.sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+}
+
+void ChessWindow::UpdatePiecePosition(ChessPiece* piece, int newX, int newY) {
+    if (piece != NULL) {
+        piece->x = newX;
+        piece->y = newY;
+        SetPiecePositionAndScale(*piece);
+    }
+}
+
 void ChessWindow::FitToHolder() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -36,8 +52,7 @@ void ChessWindow::MapPieces()
 	{
 		if (pieces[i].draw == 1)
 		{
-			pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (pieces[i].x * Holder.width / 8), Holder.top + offsety+ (pieces[i].y * Holder.height / 8)));
-			pieces[i].sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+            SetPiecePositionAndScale(pieces[i]);
 		}
 	}
 }
@@ -45,70 +60,51 @@ void ChessWindow::MapPieces()
 void ChessWindow::MapPieces(move curr)
 {
     ChessPiece* selected = NULL;
-    bool capture = false;
     for (int i = 0; i < 64; ++i)
     {
         if (pieces[i].draw == 1)
         {
-            if (pieces[i].x == curr.oX && pieces[i].y == curr.oY)
+            if (pieces[i].x == curr.oldPos.X && pieces[i].y == curr.oldPos.Y)
             {
                 selected = &pieces[i];
             }
-            if (pieces[i].x == curr.X && pieces[i].y == curr.Y)
+            if (pieces[i].x == curr.newPos.X && pieces[i].y == curr.newPos.Y)
             {
                 pieces[i].draw = 0;
-                //sounds[2].play();
-                capture = true;
             }
-            pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (pieces[i].x * Holder.width / 8), Holder.top + offsety +(pieces[i].y * Holder.height / 8)));
-            pieces[i].sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+            SetPiecePositionAndScale(pieces[i]);
         }
     }
-    if (selected != NULL) {
-        selected->x = curr.X;
-        selected->y = curr.Y;
-
-        selected->sprite.setPosition(sf::Vector2f(Holder.left + offsetx +(selected->x * Holder.width / 8), Holder.top + offsety +(selected->y * Holder.height / 8)));
-        selected->sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
-    }
+    UpdatePiecePosition(selected, curr.newPos.X, curr.newPos.Y);
 }
 
 void ChessWindow::MapPromotion(move curr)
 {
     ChessPiece* selected = NULL;
-    bool capture = false;
     for (int i = 0; i < 64; ++i)
     {
         if (pieces[i].draw == 1)
         {
-            if (pieces[i].x == curr.oX && pieces[i].y == curr.oY)
+            if (pieces[i].x == curr.oldPos.X && pieces[i].y == curr.oldPos.Y)
             {
                 selected = &pieces[i];
             }
-            if (pieces[i].x == curr.X && pieces[i].y == curr.Y)
+            if (pieces[i].x == curr.newPos.X && pieces[i].y == curr.newPos.Y)
             {
                 pieces[i].draw = 0;
-                //sounds[2].play();
-                capture = true;
             }
-            pieces[i].sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (pieces[i].x * Holder.width / 8), Holder.top + offsety + (pieces[i].y * Holder.height / 8)));
-            pieces[i].sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+            SetPiecePositionAndScale(pieces[i]);
         }
     }
     if (selected != NULL) {
-        selected->x = curr.X;
-        selected->y = curr.Y;
+        UpdatePiecePosition(selected, curr.newPos.X, curr.newPos.Y);
 
-        selected->pieceID = playBoard.currBoard.arr[curr.X][curr.Y];
-
+        selected->pieceID = playBoard.currBoard.arr[curr.newPos.X][curr.newPos.Y];
         selected->sprite.setTexture(pieceTex[selected->pieceID]);
 
-        selected->sprite.setPosition(sf::Vector2f(Holder.left + offsetx + (selected->x * Holder.width / 8), Holder.top + offsety + (selected->y * Holder.height / 8)));
-        selected->sprite.setScale(Holder.width / 1600.f, Holder.height / 1600.f);
+        SetPiecePositionAndScale(*selected);
     }
 }
-
-
 
 ChessWindow::ChessWindow(int width, int height, const char* name, const char* imgPath[12])
 {
@@ -126,11 +122,13 @@ ChessWindow::ChessWindow(int width, int height, const char* name, const char* im
     Holder.height = height;
 
     FitToHolder();
+
     sf::IntRect blank;
     for (int i = 0; i < 12; ++i)
     {
         pieceTex[i].loadFromFile(imgPath[i], blank);
     }
+
     int index = 0;
     for (int i = 0; i < 8; ++i)
     {
@@ -153,35 +151,41 @@ ChessWindow::ChessWindow(int width, int height, const char* name, const char* im
 
     MapPieces();
     window.create(sf::VideoMode(width, height), name);
+    AI = new ChessAI(playBoard);
 }
 
-bool ChessWindow::Update()
-{
+bool ChessWindow::GameUpdate() {
+    window.clear();
+    DrawSquares();
+    DrawPieces();
+
+    if (gameover || Stalemate) {
+        std::string message = Stalemate ? "Draw by Stalemate!!" : (playBoard.getTurn() == 0 ? "White Wins!" : "Black Wins!");
+        text.setString(message);
+
+        text2.setString("Press 'Esc' to close");
+        text.setFont(font);
+        text2.setFont(font);
+        text.setCharacterSize(0.1 * X);
+        text2.setCharacterSize(0.04 * X);
+
+        text.setPosition(0.24 * X, 0.425 * Y);
+        text2.setPosition(0.3 * X, 0.625 * Y);
+        text.setFillColor(sf::Color::Red);
+        text2.setFillColor(sf::Color::Blue);
+        window.draw(text);
+        window.draw(text2);
+    }
+
+    window.display();
+
     sf::Event event;
     while (window.pollEvent(event))
     {
         switch (event.type)
         {
         case sf::Event::Resized:
-            X = window.getSize().x;
-            Y = window.getSize().y;
-            window.setView(sf::View(sf::FloatRect(0, 0, X, Y)));
-            if (X > Y)
-            {
-                Holder.width = Y;
-                Holder.height = Y;
-                Holder.left = X / 2 - Holder.width / 2;
-                Holder.top = 0;
-            }
-            else
-            {
-                Holder.width = X;
-                Holder.height = X;
-                Holder.top = Y / 2 - Holder.height / 2;
-                Holder.left = 0;
-            }
-            MapPieces();
-            FitToHolder();
+            HandleResizeEvent();
             break;
         case sf::Event::MouseButtonPressed:
             if (event.mouseButton.button == sf::Mouse::Button::Left && ((whiteplayplayer && playBoard.getTurn()) || (blackplayplayer && !playBoard.getTurn())))
@@ -214,77 +218,15 @@ bool ChessWindow::Update()
 
                         move m(selected[0], selected[1], projX, projY);
                         //move bestmove = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 2,&checkmate, &stalemate);
-                        move bestmove = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate , 2);
+                        move bestmove = AI->NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate, 2);
 
-                        if (bestmove.X != -1 && bestmove.oX != -1 && bestmove.Y != -1 && bestmove.oY != -1) {
-                            if (playBoard.playMove(m))
-                            {
-#pragma region CastleRights
-
-                                if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
-                                    playBoard.canwKingKcastle = false;
-                                    playBoard.canwKingQcastle = false;
-                                }
-                                if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
-                                    playBoard.canbKingKcastle = false;
-                                    playBoard.canbKingQcastle = false;
-                                }
-                                if ((m.oX == 7&& m.oY == 7)|| (m.X == 7 && m.Y == 7)) {
-                                    playBoard.canwKingKcastle = false;
-                                }
-                                if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
-                                    playBoard.canwKingQcastle = false;
-                                }
-                                if ((m.oX == 7 && m.oY == 0) || (m.X == 7 && m.Y == 0)) {
-                                    playBoard.canbKingKcastle = false;
-                                }
-                                if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
-                                    playBoard.canbKingQcastle = false;
-                                }
-#pragma endregion
-                                if (pieces[m.oX* 8 + m.oY].pieceID == 0 && m.Y == 0) {
-                                    MapPromotion(m);
-                                }
-                                else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
-                                    MapPromotion(m);
-                                }
-                                else {
-                                    MapPieces(m);
-#pragma region Castle
-                                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
-                                    {
-                                        MapPieces(move(7, 7, 5, 7));
-                                    }
-                                    if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
-                                    {
-                                        MapPieces(move(0, 7, 3, 7));
-                                    }
-                                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
-                                    {
-                                        MapPieces(move(7, 0, 5, 0));
-                                    }
-                                    if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
-                                    {
-                                        MapPieces(move(0, 0, 3, 0));
-                                    }
-                                }
-#pragma endregion
-                                playBoard.nextTurn();
-                            }
-                        }
-                        if (checkmate)
-                        {
-                            gameover = true;
-                        }
-                        if (stalemate) {
-                            Stalemate = true;
-                            gameover = true;
-                        }
+                        tryAndMakeMove(m, checkmate, stalemate);
+                       
                         isSelected = 0;
                     }
                 }
             }
-            
+
             else if (event.mouseButton.button == sf::Mouse::Button::Right)
             {
                 isSelected = 0;
@@ -304,114 +246,243 @@ bool ChessWindow::Update()
         }
 
     }
+
+
     
-
-    window.clear();
-    DrawSquares();
-    DrawPieces();
-    if (Stalemate && gameover) {
-        //std::string a = (playBoard.getTurn() == 0 ? "white" : "black");
-        text.setString("Draw by Stalemate!!");
-        text2.setString("Press 'Esc' to close");
-        text.setFont(font);
-        text2.setFont(font);
-        text.setCharacterSize(0.1 * X);
-        text2.setCharacterSize(0.04 * X);
-
-        text.setPosition(0.24 * X, 0.425 * Y);
-        text2.setPosition(0.3 * X, 0.625 * Y);
-        text.setFillColor(sf::Color::Red);
-        text2.setFillColor(sf::Color::Blue);
-        window.draw(text);
-        window.draw(text2);
-    }
-    if (gameover && !Stalemate) {
-        std::string a = (playBoard.getTurn() == 0 ? "white" : "black");
-        text.setString(a + " wins!!");
-        text2.setString("Press 'Esc' to close");
-        text.setFont(font);
-        text2.setFont(font);
-        text.setCharacterSize(0.1*X);
-        text2.setCharacterSize(0.04*X);
-
-        text.setPosition(0.24*X, 0.425*Y);
-        text2.setPosition(0.3*X, 0.625*Y);
-        text.setFillColor(sf::Color::Red);
-        text2.setFillColor(sf::Color::Blue);
-        window.draw(text);
-        window.draw(text2);
-    }
-    window.display();
 
     if (((!whiteplayplayer && playBoard.getTurn()) || (!blackplayplayer && !playBoard.getTurn()))) {
 
         bool checkmate = false;
         bool stalemate = false;
-        move m = playBoard.NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate);
+        move m = AI->NegaMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate, &stalemate);
         //move m = playBoard.bestMove(playBoard.currBoard, playBoard.getTurn(), 4, &checkmate, &isMeCheckmate);
         //move m = playBoard.MinMaxRecursionhelper(playBoard.currBoard, playBoard.getTurn(), &checkmate);
+        tryAndMakeMove(m, checkmate, stalemate);
+    }
 
-        if (playBoard.playMove(m))
+    return true;
+}
+
+bool ChessWindow::StartUpdate() {
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+        switch (event.type)
         {
-#pragma region CastleRights
-            if (playBoard.currBoard.arr[m.X][m.Y] == 4) {
-                playBoard.canwKingKcastle = false;
-                playBoard.canwKingQcastle = false;
+        case sf::Event::Resized:
+            X = window.getSize().x;
+            Y = window.getSize().y;
+            window.setView(sf::View(sf::FloatRect(0, 0, X, Y)));
+            if (X > Y)
+            {
+                Holder.width = Y;
+                Holder.height = Y;
+                Holder.left = X / 2 - Holder.width / 2;
+                Holder.top = 0;
             }
-            if (playBoard.currBoard.arr[m.X][m.Y] == 10) {
-                playBoard.canbKingKcastle = false;
-                playBoard.canbKingQcastle = false;
+            else
+            {
+                Holder.width = X;
+                Holder.height = X;
+                Holder.top = Y / 2 - Holder.height / 2;
+                Holder.left = 0;
             }
-            if ((m.oX == 7 && m.oY == 7) || (m.X == 7 && m.Y == 7)) {
-                playBoard.canwKingKcastle = false;
+            MapPieces();
+            FitToHolder();
+            break;
+        case sf::Event::KeyPressed:
+            if (event.key.code == sf::Keyboard::Escape) {
+                window.close();
+                return false;
+                break;
             }
-            if ((m.oX == 0 && m.oY == 7) || (m.X == 0 && m.Y == 7)) {
-                playBoard.canwKingQcastle = false;
-            }
-            if ((m.oX == 7 && m.oY == 0) || (m.X == 7 && m.Y == 0)) {
-                playBoard.canbKingKcastle = false;
-            }
-            if ((m.oX == 0 && m.oY == 0) || (m.X == 0 && m.Y == 0)) {
-                playBoard.canbKingQcastle = false;
-            }
-#pragma endregion
-            if (pieces[m.oX * 8 + m.oY].pieceID == 0 && m.Y == 0) {
-                MapPromotion(m);
-            }
-            else if (pieces[m.oX * 8 + m.oY].pieceID == 6 && m.Y == 7) {
-                MapPromotion(m);
-            }
-            else {
-                MapPieces(m);
-#pragma region Castle
-                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.X - m.oX == 2)
-                {
-                    MapPieces(move(7, 7, 5, 7));
+            if (event.key.code == sf::Keyboard::Num1) {
+                if (gamestate == GameState::initial) {
+                    whiteplayplayer = 1;
+                    blackplayplayer = 1;
+                    gamestate = GameState::startGame;
                 }
-                if (playBoard.currBoard.arr[m.X][m.Y] == 4 && m.oX - m.X == 2)
-                {
-                    MapPieces(move(0, 7, 3, 7));
+                if (gamestate == GameState::humanVsAi) {
+                    whiteplayplayer = 1;
+                    blackplayplayer = 0;
+                    gamestate = GameState::startGame;
                 }
-                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.X - m.oX == 2)
-                {
-                    MapPieces(move(7, 0, 5, 0));
-                }
-                if (playBoard.currBoard.arr[m.X][m.Y] == 10 && m.oX - m.X == 2)
-                {
-                    MapPieces(move(0, 7, 3, 0));
-                }
-#pragma endregion
             }
-            playBoard.nextTurn();
-        }
-        if (checkmate) {
-            gameover = true;
-        }
-        if (stalemate) {
-            Stalemate = true;
-            gameover = true;
+            if (event.key.code == sf::Keyboard::Num2) {
+                if (gamestate == GameState::initial) {
+                    gamestate = GameState::humanVsAi;
+                }
+            }
+            if (event.key.code == sf::Keyboard::Num3) {
+                if (gamestate == GameState::initial) {
+                    whiteplayplayer = 0;
+                    blackplayplayer = 0;
+                    gamestate = GameState::startGame;
+                }
+                if (gamestate == GameState::humanVsAi) {
+                    whiteplayplayer = 0;
+                    blackplayplayer = 1;
+                    gamestate = GameState::startGame;
+                }
+            }
+
+            break;
         }
     }
-    
+    window.clear();
+    DrawSquares();
+    DrawPieces();
+    switch (gamestate)
+    {
+    case none:
+        break;
+    case initial:
+        text.setString("Press NUM1 to Start Human Vs Human");
+        text2.setString("Press NUM2 to Start Human Vs AI");
+        text3.setString("Press NUM3 to Start AI Vs AI");
+        text.setFont(font);
+        text2.setFont(font);
+        text3.setFont(font);
+        text.setCharacterSize (0.05 * X);
+        text2.setCharacterSize(0.05 * X);
+        text3.setCharacterSize(0.05 * X);
+
+        text.setPosition (0.06 * X, 0.3 * Y);
+        text2.setPosition(0.12 * X, 0.45 * Y);
+        text3.setPosition(0.18 * X, 0.6 * Y);
+        text.setFillColor (sf::Color::Red);
+        text2.setFillColor(sf::Color::Red);
+        text3.setFillColor(sf::Color::Red);
+        window.draw(text);
+        window.draw(text2);
+        window.draw(text3);
+        break;
+    case humanVsAi:
+        text.setString ("Press NUM1 to Start Human as White");
+        text2.setString("Press NUM3 to Start Human as Black");
+        //text3.setString("Press NUM3 to Start AI Vs AI");
+        text.setFont(font);
+        text2.setFont(font);
+        //text3.setFont(font);
+        text.setCharacterSize(0.05 * X);
+        text2.setCharacterSize(0.05 * X);
+        //text3.setCharacterSize(0.05 * X);
+
+        text.setPosition(0.07 * X, 0.4 * Y);
+        text2.setPosition(0.07 * X, 0.55 * Y);
+        //text3.setPosition(0.18 * X, 0.6 * Y);
+        text.setFillColor(sf::Color::Red);
+        text2.setFillColor(sf::Color::Red);
+        text3.setFillColor(sf::Color::Red);
+        window.draw(text);
+        window.draw(text2);
+        //window.draw(text3);
+        break;
+    case startGame:
+        break;
+    default:
+        break;
+    }
+    window.display();
+
     return true;
+}
+
+bool ChessWindow::Update()
+{
+    if (gamestate != GameState::startGame) {
+        return StartUpdate();
+    }
+    else{
+        return GameUpdate();
+    }
+}
+
+void ChessWindow::HandleResizeEvent() {
+    X = window.getSize().x;
+    Y = window.getSize().y;
+    window.setView(sf::View(sf::FloatRect(0, 0, X, Y)));
+    if (X > Y) {
+        Holder.width = Y;
+        Holder.height = Y;
+        Holder.left = X / 2 - Holder.width / 2;
+        Holder.top = 0;
+    } else {
+        Holder.width = X;
+        Holder.height = X;
+        Holder.top = Y / 2 - Holder.height / 2;
+        Holder.left = 0;
+    }
+    MapPieces();
+    FitToHolder();
+}
+
+void ChessWindow::tryAndMakeMove(move m, bool checkmate, bool stalemate) {
+    if (checkmate) {
+        gameover = true;
+        return;
+    }
+    if (stalemate) {
+        Stalemate = true;
+        gameover = true;
+        return;
+    }
+    if (playBoard.playMove(m))
+    {
+        handleCastleRights(m);
+
+        if ((pieces[m.oldPos.X * 8 + m.oldPos.Y].pieceID == 6 && m.newPos.Y == 0) || 
+            (pieces[m.oldPos.X * 8 + m.oldPos.Y].pieceID == 0 && m.newPos.Y == 7)) {
+            MapPromotion(m);
+        }
+        else {
+            MapPieces(m);
+            handleCastleMoves(m);
+        }
+        playBoard.nextTurn();
+    }
+}
+
+void ChessWindow::handleCastleRights(move m)
+{
+    if (playBoard.currBoard.arr[m.newPos.X][m.newPos.Y] == 4) {
+        playBoard.canwKingKcastle = false;
+        playBoard.canwKingQcastle = false;
+    }
+    if (playBoard.currBoard.arr[m.newPos.X][m.newPos.Y] == 10) {
+        playBoard.canbKingKcastle = false;
+        playBoard.canbKingQcastle = false;
+    }
+    if ((m.oldPos.X == 7 && m.oldPos.Y == 7) || (m.newPos.X == 7 && m.newPos.Y == 7)) {
+        playBoard.canwKingKcastle = false;
+    }
+    if ((m.oldPos.X == 0 && m.oldPos.Y == 7) || (m.newPos.X == 0 && m.newPos.Y == 7)) {
+        playBoard.canwKingQcastle = false;
+    }
+    if ((m.oldPos.X == 7 && m.oldPos.Y == 0) || (m.newPos.X == 7 && m.newPos.Y == 0)) {
+        playBoard.canbKingKcastle = false;
+    }
+    if ((m.oldPos.X == 0 && m.oldPos.Y == 0) || (m.newPos.X == 0 && m.newPos.Y == 0)) {
+        playBoard.canbKingQcastle = false;
+    }
+}
+
+void ChessWindow::handleCastleMoves(move m)
+{
+    if (playBoard.currBoard.arr[m.newPos.X][m.newPos.Y] == 4 && m.newPos.X - m.oldPos.X == 2)
+    {
+        MapPieces(move(7, 7, 5, 7));
+    }
+    if (playBoard.currBoard.arr[m.newPos.X][m.newPos.Y] == 4 && m.oldPos.X - m.newPos.X == 2)
+    {
+        MapPieces(move(0, 7, 3, 7));
+    }
+    if (playBoard.currBoard.arr[m.newPos.X][m.newPos.Y] == 10 && m.newPos.X - m.oldPos.X == 2)
+    {
+        MapPieces(move(7, 0, 5, 0));
+    }
+    if (playBoard.currBoard.arr[m.newPos.X][m.newPos.Y] == 10 && m.oldPos.X - m.newPos.X == 2)
+    {
+        MapPieces(move(0, 7, 3, 0));
+    }
 }

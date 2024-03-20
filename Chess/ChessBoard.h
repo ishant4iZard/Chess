@@ -5,9 +5,13 @@
 #include <cstring>
 #include <map>
 
+struct Position {
+    int X, Y;
+};
+
 struct move
 {
-    int oX, oY, X, Y;
+    Position oldPos, newPos;
     move() {}
     move(int oldX, int oldY, int newX, int newY);
 };
@@ -23,17 +27,11 @@ struct board
         {8, 6, -1, -1, -1, -1, 0, 2},
         {7, 6, -1, -1, -1, -1, 0, 1} 
     };
-    /*int arr[8][8] = {
-        {7, -1, -1, -1, -1, -1, 6, -1},
-        {-1, 9, -1, 6, -1, -1, -1, -1},
-        {-1, -1, -1, -1, -1, -1, -1, 4},
-        {-1, -1, -1, 6, -1, -1, -1, -1},
-        {-1, -1, -1, 10, 11, -1, -1, -1},
-        {-1, -1, -1, -1, -1, 11, -1, -1},
-        {-1, -1, -1, -1, -1, -1, -1, -1},
-        {-1, -1, -1, -1, -1, -1, -1, -1}
-    };*/
+    
     float score = 0;
+
+    short whitePiecesLeft = 16;
+    short blackPiecesLeft = 16;
 
     void updateScore(float a) {
         score -= a;
@@ -54,11 +52,10 @@ private:
     void Bishop(std::vector<move>& moves, int x, int y, board newboard);
     void Knight(std::vector<move>& moves, int x, int y, board newboard);
 
-    float MinMaxRecursion(board newboard, bool newturn,int depth ,bool* Checkmate,move &RecursionBestMove);
-    float NegaMaxRecursion(board newboard, bool newturn, int depth, bool* Checkmate, move& RecursionBestMove);
-    float NegaMaxRecursionAlphaBeta(board newboard, bool newturn, int depth, bool* Checkmate, bool* Stalemate,float alpha , float beta, move& RecursionBestMove);
-    float NegaMaxRecursionAlphaBetaThreads(board newboard, bool newturn, int depth, bool* Checkmate, bool* Stalemate,float alpha, float beta, move& RecursionBestMove);
-    void sortMoves(std::vector<move>& movesThisTurn, board newboard,bool newTurn);
+    void executeMove(board& gameBoard, const move& req);
+    void undoMove(board& gameBoard, const move& req, int capturedPiece);
+    void handleSpecialMoves(board& gameBoard, const move& req);
+    bool isMoveValid(const move& legalMove, const move& req);
 
 public:
     ChessBoard();
@@ -66,12 +63,16 @@ public:
     std::vector<move> getLegalMoves(board b, bool color);
     board currBoard;
     bool playMove(move req);
-    bool playMoveAI(move req , board newboard , bool newturn, std::vector<move> movesthisTurn );
+    bool playMoveAI(move req , board newboard , bool newturn, const std::vector<move> movesthisTurn );
     bool nextTurn();
     bool canwKingQcastle = true;
     bool canwKingKcastle = true;
     bool canbKingKcastle = true;
     bool canbKingQcastle = true;
+
+    void setDepth(int indepth) {
+        Depth = indepth;
+    }
 
     sf::Text text;
     std::vector<move> moves;
@@ -82,15 +83,10 @@ public:
         return turn;
     }
 
-    std::map<int, int> pieceScores;
-    std::map<int, std::vector<std::vector<float>>> piecePosScores;
+    std::map<int, int> pieceScores; // represents the score of piece based on thier ability
+    std::map<int, std::vector<std::vector<float>>> piecePosScores; // represents the score of piece based on thier positional advantage, this can be altered to change the behaviour of AI
 
     bool isInCheck(board newboard, bool newTurn);
-
-    move bestMove(board newboard, bool turn, int depth,bool *Checkmate, bool* isMeCheckmate);
-    move MinMax(board newboard, bool newturn, bool* Checkmate);
-    move MinMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate);
-    move NegaMaxRecursionhelper(board newboard, bool newturn, bool* Checkmate, bool* Stalemate , int depth = 7);
 
     float score(move m, const board newboard);
     board createnewboard(move m, board& currgoingboard);

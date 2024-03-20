@@ -30,12 +30,21 @@
     <ClCompile Include="ChessBoardMoves.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChessAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChessPiece.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChessBoard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="piecePositionScores.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessAI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
