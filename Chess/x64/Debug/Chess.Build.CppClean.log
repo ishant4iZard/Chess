@@ -5,13 +5,21 @@ c:\users\ishan\source\repos\chess\chess\x64\debug\chesswindow.obj
 c:\users\ishan\source\repos\chess\chess\x64\debug\chessboardmoves.obj
 c:\users\ishan\source\repos\chess\chess\x64\debug\chessboard.obj
 c:\users\ishan\source\repos\chess\x64\debug\chess.exe
+<<<<<<< HEAD
 c:\users\ishan\source\repos\chess\x64\debug\chess.pdb
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.ilk
+=======
+c:\users\ishan\source\repos\chess\chess\x64\debug\chess.ilk
+c:\users\ishan\source\repos\chess\x64\debug\chess.pdb
+>>>>>>> 22ed8f5e351ada78fa762f4e0e29fd7924ecbe64
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\cl.command.1.tlog
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\cl.items.tlog
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\cl.read.1.tlog
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\cl.write.1.tlog
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\link.command.1.tlog
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\link.read.1.tlog
+<<<<<<< HEAD
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\link.secondary.1.tlog
+=======
+>>>>>>> 22ed8f5e351ada78fa762f4e0e29fd7924ecbe64
 c:\users\ishan\source\repos\chess\chess\x64\debug\chess.tlog\link.write.1.tlog

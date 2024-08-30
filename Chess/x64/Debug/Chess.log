@@ -1,7 +1,13 @@
 ﻿  ChessBoard.cpp
+<<<<<<< HEAD
 C:\Users\ishan\source\repos\Chess\Chess\ChessBoard.cpp(340,26): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
 C:\Users\ishan\source\repos\Chess\Chess\ChessBoard.cpp(393,44): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\Users\ishan\source\repos\Chess\Chess\ChessBoard.cpp(588,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+=======
+C:\Users\ishan\source\repos\Chess\Chess\ChessBoard.cpp(333,26): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessBoard.cpp(386,44): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessBoard.cpp(581,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+>>>>>>> 22ed8f5e351ada78fa762f4e0e29fd7924ecbe64
   ChessBoardMoves.cpp
   ChessWindow.cpp
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(7,92): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
@@ -70,6 +76,7 @@ C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,130): warning C4244:
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,130): warning C4244:             T=float
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,130): warning C4244:         ]
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,73): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+<<<<<<< HEAD
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,73): warning C4244:         with
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,73): warning C4244:         [
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(106,73): warning C4244:             T=float
@@ -121,6 +128,34 @@ C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(523,40): warning C4244: 
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(523,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(524,42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(524,32): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+=======
+          with
+          [
+              T=float
+          ]
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(168,60): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(168,57): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(318,35): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(319,37): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(321,42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(321,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(322,42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(322,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(334,34): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(335,36): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(337,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(337,30): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(338,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\ishan\source\repos\Chess\Chess\ChessWindow.cpp(338,30): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+>>>>>>> 22ed8f5e351ada78fa762f4e0e29fd7924ecbe64
   ChessWindow.h
   Main.cpp
 C:\Users\ishan\source\repos\Chess\Chess\Main.cpp(22,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data

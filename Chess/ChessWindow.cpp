@@ -486,3 +486,13 @@ void ChessWindow::handleCastleMoves(move m)
         MapPieces(move(0, 7, 3, 0));
     }
 }
+
+bool ChessWindow::Update()
+{
+    if (gamestate != GameState::startGame) {
+        return StartUpdate();
+    }
+    else{
+        return GameUpdate();
+    }
+}

@@ -225,6 +225,8 @@ bool ChessBoard::isMoveValid(const move& legalMove, const move& req) {
         legalMove.newPos.X == req.newPos.X && legalMove.newPos.Y == req.newPos.Y);
 }
 
+
+
 bool ChessBoard::nextTurn()
 {
     turn = !turn;
