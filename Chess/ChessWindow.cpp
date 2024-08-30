@@ -388,16 +388,6 @@ bool ChessWindow::StartUpdate() {
     return true;
 }
 
-bool ChessWindow::Update()
-{
-    if (gamestate != GameState::startGame) {
-        return StartUpdate();
-    }
-    else{
-        return GameUpdate();
-    }
-}
-
 void ChessWindow::HandleResizeEvent() {
     X = window.getSize().x;
     Y = window.getSize().y;

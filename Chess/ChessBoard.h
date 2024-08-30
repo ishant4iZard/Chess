@@ -14,6 +14,12 @@ struct move
     Position oldPos, newPos;
     move() {}
     move(int oldX, int oldY, int newX, int newY);
+
+    bool operator==(const move& other) const {
+        return oldPos.X == other.oldPos.X && oldPos.Y == other.oldPos.Y &&
+            newPos.X == other.newPos.X && newPos.Y == other.newPos.Y;
+    }
+
 };
 struct board
 {
