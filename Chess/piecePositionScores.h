@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-static std::vector<std::vector<float>> KnightScores =
+static std::vector<std::vector<float>> KnightPosWeight =
 {
     {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f},
     {1.0f,2.0f,2.0f,2.0f,2.0f,2.0f,2.0f,1.0f},
@@ -13,7 +13,7 @@ static std::vector<std::vector<float>> KnightScores =
     {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f}
 };
 
-static std::vector<std::vector<float>> BishopScores =
+static std::vector<std::vector<float>> BishopPosWeight =
 {
     {4.0f,3.0f,2.0f,1.0f,1.0f,2.0f,3.0f,4.0f},
     {3.0f,4.1f,3.1f,2.1f,2.1f,3.1f,4.1f,3.0f},
@@ -25,7 +25,7 @@ static std::vector<std::vector<float>> BishopScores =
     {4.0f,3.0f,1.0f,1.0f,1.0f,1.0f,3.0f,4.0f}
 };
 
-static std::vector<std::vector<float>> WhitePawnScores =
+static std::vector<std::vector<float>> WhitePawnPosWeight =
 {
     {10.0f,8.0f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
     {10.0f,8.1f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f},
@@ -37,7 +37,7 @@ static std::vector<std::vector<float>> WhitePawnScores =
     {10.0f,8.0f,4.5f,4.2f,4.0f,2.0f,1.0f,0.0f}
 };
 
-static std::vector<std::vector<float>> BlackPawnScores =
+static std::vector<std::vector<float>> BlackPawnPosWeight =
 {
     {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.0f,10.0f},
     {0.0f,1.0f,2.0f,4.0f,4.2f,4.5f,8.1f,10.0f},

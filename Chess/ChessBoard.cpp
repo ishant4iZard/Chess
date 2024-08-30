@@ -55,21 +55,21 @@ ChessBoard::ChessBoard()
     pieceScores[-1] = 0;
 
     //piecePosScores[0] = KnightScores;
-    piecePosScores[0] = WhitePawnScores;
-    piecePosScores[1] = KnightScores;
-    piecePosScores[2] = KnightScores;
-    piecePosScores[3] = BishopScores;
-    piecePosScores[4] = BishopScores;
-    piecePosScores[5] = BishopScores;
-    piecePosScores[6] = BlackPawnScores;
-    piecePosScores[7] = KnightScores;
-    piecePosScores[8] = KnightScores;
-    piecePosScores[9] = BishopScores;
-    piecePosScores[10] = BishopScores;
-    piecePosScores[11] = BishopScores;
-    piecePosScores[-1] = KnightScores;
+    piecePosScores[0] = WhitePawnPosWeight;
+    piecePosScores[1] = KnightPosWeight;
+    piecePosScores[2] = KnightPosWeight;
+    piecePosScores[3] = BishopPosWeight;
+    piecePosScores[4] = BishopPosWeight;
+    piecePosScores[5] = BishopPosWeight;
+    piecePosScores[6] = BlackPawnPosWeight;
+    piecePosScores[7] = KnightPosWeight;
+    piecePosScores[8] = KnightPosWeight;
+    piecePosScores[9] = BishopPosWeight;
+    piecePosScores[10] = BishopPosWeight;
+    piecePosScores[11] = BishopPosWeight;
+    piecePosScores[-1] = KnightPosWeight;
 
-    ChessBoard::turn = 1;
+    turn = 1;//true is white's turn false is black's
 
     canwKingQcastle = true;
     canwKingKcastle = true;
@@ -148,8 +148,6 @@ bool ChessBoard::isInCheck(board newboard, bool newTurn)
     return false;
 }
 
-
-
 void ChessBoard::quicksort(std::vector<move>& vec, int L, int R, board newboard, bool newturn) {
     int turnMultiplier = newturn ? 1 : -1;
     int i, j, mid;
@@ -224,8 +222,6 @@ bool ChessBoard::isMoveValid(const move& legalMove, const move& req) {
     return (legalMove.oldPos.X == req.oldPos.X && legalMove.oldPos.Y == req.oldPos.Y &&
         legalMove.newPos.X == req.newPos.X && legalMove.newPos.Y == req.newPos.Y);
 }
-
-
 
 bool ChessBoard::nextTurn()
 {
